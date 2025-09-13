@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import confloat
 from datetime import date
-from dateutil.relativedelta import relativedelta
 import httpx
 import calendar
 from collections import defaultdict

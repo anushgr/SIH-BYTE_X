@@ -27,7 +27,7 @@ This is a simple FastAPI backend for the SIH BYTE_X project. It provides endpoin
    ```
 2. Install dependencies:
    ```cmd
-   pip install fastapi uvicorn
+   pip install fastapi uvicorn httpx requests
    ```
 3. Run the server:
    ```cmd
