@@ -1,250 +1,252 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 export default function Home() {
-  const [location, setLocation] = useState<{
-    latitude: number;
-    longitude: number;
-    accuracy: number;
-  } | null>(null);
-  const [locationError, setLocationError] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-          });
-          setIsLoading(false);
-        },
-        (error) => {
-          let errorMessage = "";
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "Location access denied by user.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information is unavailable.";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "Location request timed out.";
-              break;
-            default:
-              errorMessage = "An unknown error occurred.";
-              break;
-          }
-          setLocationError(errorMessage);
-          setIsLoading(false);
-        }
-      );
-    } else {
-      setLocationError("Geolocation is not supported by this browser.");
-      setIsLoading(false);
-    }
-  }, []);
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Next.js + shadcn/ui + Tailwind CSS v4
-          </h1>
-          <p className="text-lg text-gray-600">
-            Testing our perfectly working setup with the latest versions!
-          </p>
-          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-            ✅ Tailwind CSS v4.0 • No config file needed!
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 dark:from-gray-900 dark:via-blue-900 dark:to-green-900">
+      {/* Hero Section */}
+      <section className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="mb-8">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+              Discover Your{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-400 dark:to-green-400">
+                Rainwater Harvesting
+              </span>{" "}
+              Potential
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+              Assess the feasibility of rooftop rainwater harvesting at your location. 
+              Get personalized recommendations for sustainable water management and groundwater conservation.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild className="text-lg px-8 py-3">
+                <Link href="/assessment">Check Your Potential</Link>
+              </Button>
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+                Learn More
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">68%</div>
+              <div className="text-gray-600 dark:text-gray-300">Water Stress Reduction Potential</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">₹15K</div>
+              <div className="text-gray-600 dark:text-gray-300">Average Annual Savings</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">3-5 Years</div>
+              <div className="text-gray-600 dark:text-gray-300">Typical ROI Period</div>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Test Components Grid */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Card 1 - Button Tests */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Button Components</CardTitle>
-              <CardDescription>
-                Testing different button variants with shadcn/ui
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Button>Default</Button>
-                <Button variant="secondary">Secondary</Button>
-                <Button variant="destructive">Destructive</Button>
-                <Button variant="outline">Outline</Button>
-                <Button variant="ghost">Ghost</Button>
-                <Button variant="link">Link</Button>
-              </div>
-              <div className="flex gap-2">
-                <Button size="sm">Small</Button>
-                <Button size="default">Default</Button>
-                <Button size="lg">Large</Button>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Features Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Comprehensive Assessment Features
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Our platform provides detailed analysis and actionable insights for your rainwater harvesting project
+            </p>
+          </div>
 
-          {/* Card 2 - Form Tests */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Form Components</CardTitle>
-              <CardDescription>
-                Testing input and label components
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="Enter your email" type="email" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" placeholder="Enter your password" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full">Submit</Button>
-            </CardFooter>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">🏠</span>
+                </div>
+                <CardTitle className="dark:text-white">Feasibility Analysis</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Detailed assessment of rooftop rainwater harvesting potential based on your property specifications
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-          {/* Card 3 - Tailwind CSS v4 Features */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Tailwind CSS v4 Features</CardTitle>
-              <CardDescription>
-                Testing modern CSS features and utilities
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-2">
-                <div className="h-16 bg-red-500 rounded-lg shadow-lg"></div>
-                <div className="h-16 bg-green-500 rounded-lg shadow-lg"></div>
-                <div className="h-16 bg-blue-500 rounded-lg shadow-lg"></div>
-              </div>
-              <div className="p-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg">
-                <p className="font-semibold">CSS-first Configuration</p>
-                <p className="text-sm opacity-90">No tailwind.config.js needed!</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="h-12 bg-yellow-300 rounded-lg shadow-sm"></div>
-                <div className="h-12 bg-indigo-300 rounded-lg shadow-md"></div>
-              </div>
-            </CardContent>
-          </Card>
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">🌧️</span>
+                </div>
+                <CardTitle className="dark:text-white">Rainfall Data</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Local rainfall patterns and runoff generation capacity analysis for your specific location
+                </CardDescription>
+              </CardHeader>
+            </Card>
 
-          {/* Card 4 - Responsive Tests */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Responsive Design</CardTitle>
-              <CardDescription>
-                Testing responsive utilities and modern layout
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                <div className="h-8 bg-cyan-300 rounded"></div>
-                <div className="h-8 bg-cyan-400 rounded"></div>
-                <div className="h-8 bg-cyan-500 rounded"></div>
-              </div>
-              <div className="p-3 border-2 border-dashed border-gray-300 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  Resize window to see responsive behavior
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">💧</span>
+                </div>
+                <CardTitle className="dark:text-white">Groundwater Info</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Information about principal aquifer and depth to groundwater level in your area
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">🔧</span>
+                </div>
+                <CardTitle className="dark:text-white">Structure Design</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Recommended dimensions for recharge pits, trenches, and shafts based on your requirements
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <CardTitle className="dark:text-white">Cost Analysis</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Detailed cost estimation and comprehensive cost-benefit analysis for your project
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+              <CardHeader>
+                <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-4">
+                  <span className="text-2xl">📍</span>
+                </div>
+                <CardTitle className="dark:text-white">GIS Integration</CardTitle>
+                <CardDescription className="dark:text-gray-300">
+                  Advanced GIS-based modeling and algorithmic analysis for precise recommendations
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
         </div>
+      </section>
 
-        {/* New v4 Features Showcase */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Tailwind CSS v4 New Features</CardTitle>
-            <CardDescription>
-              Showcasing what's new in v4
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="p-4 bg-white rounded-lg shadow-sm border">
-                <h3 className="font-semibold mb-2">⚡ Faster Builds</h3>
-                <p className="text-sm text-gray-600">Up to 5x faster full builds, 100x faster incremental builds</p>
-              </div>
-              <div className="p-4 bg-white rounded-lg shadow-sm border">
-                <h3 className="font-semibold mb-2">🎨 CSS-first Config</h3>
-                <p className="text-sm text-gray-600">Configuration directly in CSS, no more JS config files</p>
-              </div>
-              <div className="p-4 bg-white rounded-lg shadow-sm border">
-                <h3 className="font-semibold mb-2">🔧 Zero Config</h3>
-                <p className="text-sm text-gray-600">Automatic content detection, no paths configuration needed</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Success Message */}
-        <div className="text-center p-6 bg-green-50 border border-green-200 rounded-lg">
-          <div className="text-2xl mb-2">🎉</div>
-          <h2 className="text-xl font-semibold text-green-800 mb-2">
-            Setup Complete!
-          </h2>
-          <p className="text-green-700">
-            Your Next.js application with Tailwind CSS v4 and shadcn/ui is working perfectly!
-          </p>
-        </div>
-
-        {/* Location Access */}
-        <Card>
-          <CardHeader>
-            <CardTitle>📍 User Location</CardTitle>
-            <CardDescription>
-              Your current location information
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="flex items-center justify-center p-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-2 text-gray-600">Getting your location...</span>
-              </div>
-            ) : locationError ? (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700">❌ {locationError}</p>
-              </div>
-            ) : location ? (
-              <div className="space-y-3">
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="font-semibold text-blue-800 mb-2">✅ Location Detected</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                    <div>
-                      <strong>Latitude:</strong> {location.latitude.toFixed(6)}
-                    </div>
-                    <div>
-                      <strong>Longitude:</strong> {location.longitude.toFixed(6)}
-                    </div>
-                    <div>
-                      <strong>Accuracy:</strong> {location.accuracy.toFixed(0)}m
-                    </div>
+      {/* Benefits Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Why Rainwater Harvesting Matters
+              </h2>
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Groundwater Conservation</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Replenish depleting groundwater levels and contribute to sustainable water management</p>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
-                  🔒 Your location data is processed locally and not stored or transmitted.
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-green-600 dark:text-green-400 font-bold text-sm">2</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cost Savings</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Reduce water bills and dependency on municipal water supply systems</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold text-sm">3</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Environmental Impact</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Reduce urban flooding and contribute to climate change mitigation efforts</p>
+                  </div>
                 </div>
               </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      </div>
-    </main>
+            </div>
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/50 dark:to-cyan-900/50 rounded-2xl p-8">
+              <div className="text-center">
+                <div className="text-6xl mb-4">🌍</div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Join the Movement</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Be part of India's largest groundwater conservation initiative supported by CGWB
+                </p>
+                <Button size="lg" asChild>
+                  <Link href="/assessment">Start Your Assessment</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-green-600">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            Ready to Make a Difference?
+          </h2>
+          <p className="text-xl text-blue-100 dark:text-blue-200 mb-8 max-w-2xl mx-auto">
+            Take the first step towards sustainable water management. 
+            Get your personalized rainwater harvesting assessment in just a few minutes.
+          </p>
+          <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-3">
+            <Link href="/assessment">Get Your Assessment</Link>
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">RH</span>
+                </div>
+                <span className="text-xl font-bold">RainHarvest</span>
+              </div>
+              <p className="text-gray-400 dark:text-gray-300">
+                Empowering communities through sustainable water management and groundwater conservation.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">About</h3>
+              <ul className="space-y-2 text-gray-400 dark:text-gray-300">
+                <li>CGWB Initiative</li>
+                <li>Scientific Approach</li>
+                <li>GIS-based Analysis</li>
+                <li>Community Impact</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Support</h3>
+              <ul className="space-y-2 text-gray-400 dark:text-gray-300">
+                <li>Help Center</li>
+                <li>Documentation</li>
+                <li>Regional Languages</li>
+                <li>Contact Us</li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-8 text-center text-gray-400 dark:text-gray-300">
+            <p>&copy; 2025 RainHarvest Platform. A Central Ground Water Board Initiative.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
