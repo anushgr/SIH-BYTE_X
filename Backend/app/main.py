@@ -6,6 +6,7 @@ from app.routers.groundwater import router as groundwater_router
 from app.routers.rainfall import router as rainfall_router
 from app.routers.runoff import router as runoff_router
 from app.routers.dimension import router as dimension_router
+from app.routers.email import router as email_router
 
 from app.routers.cost import router as cost_router
 from app.routers.groundwater_api import router as groundwater_api_router
@@ -24,3 +25,4 @@ app.include_router(dimension_router)
 app.include_router(cost_router)
 app.include_router(groundwater_api_router)
 app.include_router(rainfall_api_router)
+app.include_router(email_router)
