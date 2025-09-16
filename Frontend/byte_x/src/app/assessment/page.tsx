@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { getCurrentLocationWithAddress } from "@/utils/geolocation"
 import type { LocationResult } from "@/types/geolocation"
+import dynamic from "next/dynamic"
 
 export default function Assessment() {
   const [formData, setFormData] = useState({
@@ -35,6 +36,9 @@ export default function Assessment() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
   const [geocodingStatus, setGeocodingStatus] = useState<string>("");
+
+  // Dynamically import the map on client only
+  const IndiaMap = useMemo(() => dynamic(() => import("@/components/IndiaMap"), { ssr: false }), [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -232,8 +236,9 @@ export default function Assessment() {
                       type="button"
                       onClick={getLocation}
                       disabled={isLoading}
-                      variant="outline"
+                      variant="default"
                       size="sm"
+                      className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                     >
                       {isLoading ? "Getting Location..." : "Get Location & Address"}
                     </Button>
@@ -270,6 +275,17 @@ export default function Assessment() {
                   
                   <div className="text-xs text-blue-600 mt-2">
                     💡 Your coordinates help us fetch local rainfall data and groundwater information for accurate assessment.
+                  </div>
+
+                  {/* Map showing user and stations */}
+                  <div className="mt-4">
+                    <IndiaMap
+                      userLocation={location ? { latitude: location.latitude, longitude: location.longitude } : null}
+                      onLocationChange={(lat, lng) => {
+                        setLocation({ latitude: lat, longitude: lng, accuracy: 0 })
+                        setGeocodingStatus("")
+                      }}
+                    />
                   </div>
                 </div>
               </CardContent>
