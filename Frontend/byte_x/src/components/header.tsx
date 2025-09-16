@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
 import { Droplets } from 'lucide-react'
+import { LanguageToggle } from './language-toggle'
 
 export function Header() {
   const pathname = usePathname()
@@ -20,7 +21,7 @@ export function Header() {
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Droplets className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            <span className="hidden font-bold sm:inline-block">
+            <span className="hidden font-bold sm:inline-block" data-translate="RTRWH Platform">
               RTRWH Platform
             </span>
           </Link>
@@ -30,7 +31,7 @@ export function Header() {
         <div className="mr-4 flex md:hidden">
           <Link href="/" className="flex items-center space-x-2">
             <Droplets className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            <span className="font-bold">RTRWH</span>
+            <span className="font-bold" data-translate="RTRWH">RTRWH</span>
           </Link>
         </div>
 
@@ -44,7 +45,7 @@ export function Header() {
                 : 'text-foreground/60'
             }`}
           >
-            Home
+            <span data-translate="Home">Home</span>
           </Link>
           <Link
             href="/assessment"
@@ -54,7 +55,7 @@ export function Header() {
                 : 'text-foreground/60'
             }`}
           >
-            Assessment
+            <span data-translate="Assessment">Assessment</span>
           </Link>
         </nav>
 
@@ -69,15 +70,16 @@ export function Header() {
             {pathname !== '/login' && pathname !== '/signup' && (
               <>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">Sign In</Link>
+                  <Link href="/login"><span data-translate="Sign In">Sign In</span></Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link href="/signup">Sign Up</Link>
+                  <Link href="/signup"><span data-translate="Sign Up">Sign Up</span></Link>
                 </Button>
               </>
             )}
             
             {/* Theme toggle */}
+            <LanguageToggle />
             <ThemeToggle />
           </nav>
         </div>

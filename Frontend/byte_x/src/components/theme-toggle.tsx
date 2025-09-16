@@ -3,9 +3,15 @@
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 import { Moon, Sun, Monitor } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const cycleTheme = () => {
     if (theme === 'light') {
@@ -18,7 +24,8 @@ export function ThemeToggle() {
   }
 
   const getIcon = () => {
-    switch (theme) {
+    const effective = mounted ? theme : 'system'
+    switch (effective) {
       case 'light':
         return <Sun className="h-4 w-4" />
       case 'dark':
@@ -31,7 +38,8 @@ export function ThemeToggle() {
   }
 
   const getLabel = () => {
-    switch (theme) {
+    const effective = mounted ? theme : 'system'
+    switch (effective) {
       case 'light':
         return 'Light mode'
       case 'dark':
