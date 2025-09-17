@@ -193,26 +193,13 @@ export default function Assessment() {
       const result = await response.json();
       console.log("Backend Response:", result);
 
-      // Navigate to report page with data
-      const queryParams = new URLSearchParams({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || '',
-        address: formData.address,
-        city: formData.city || '',
-        state: formData.state || '',
-        pincode: formData.pincode || '',
-        dwellers: formData.dwellers,
-        roofArea: formData.roofArea,
-        roofType: formData.roofType || '',
-        openSpace: formData.openSpace || '',
-        currentWaterSource: formData.currentWaterSource || '',
-        monthlyWaterBill: formData.monthlyWaterBill || '',
-        latitude: location?.latitude?.toString() || '',
-        longitude: location?.longitude?.toString() || '',
-      });
+      // Store the assessment result in localStorage for the report page
+      localStorage.setItem('assessmentResult', JSON.stringify(result));
+      localStorage.setItem('assessmentFormData', JSON.stringify(formData));
+      localStorage.setItem('assessmentLocation', JSON.stringify(location));
 
-      router.push(`/report?${queryParams.toString()}`);
+      // Navigate to report page
+      router.push('/report');
       
     } catch (error) {
       console.error("Assessment submission error:", error);
@@ -220,25 +207,11 @@ export default function Assessment() {
       // Still navigate to report page even if API fails (for now)
       alert("Assessment data processed! Note: Backend API connection failed, but proceeding to report.");
       
-      const queryParams = new URLSearchParams({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || '',
-        address: formData.address,
-        city: formData.city || '',
-        state: formData.state || '',
-        pincode: formData.pincode || '',
-        dwellers: formData.dwellers,
-        roofArea: formData.roofArea,
-        roofType: formData.roofType || '',
-        openSpace: formData.openSpace || '',
-        currentWaterSource: formData.currentWaterSource || '',
-        monthlyWaterBill: formData.monthlyWaterBill || '',
-        latitude: location?.latitude?.toString() || '',
-        longitude: location?.longitude?.toString() || '',
-      });
-
-      router.push(`/report?${queryParams.toString()}`);
+      // Store form data for fallback display
+      localStorage.setItem('assessmentFormData', JSON.stringify(formData));
+      localStorage.setItem('assessmentLocation', JSON.stringify(location));
+      
+      router.push('/report');
     } finally {
       setIsSubmitting(false);
     }

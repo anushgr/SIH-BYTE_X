@@ -24,9 +24,63 @@ interface AssessmentData {
   longitude?: number;
 }
 
+interface SoilAnalysis {
+  soil_type?: string;
+  soil_class?: string;
+  soil_code?: number;
+  suitability?: string;
+  suitability_score?: number;
+  infiltration_rate?: string;
+  recommendations?: string[];
+  error?: string;
+  message?: string;
+}
+
+interface RainfallAnalysis {
+  annual_rainfall_mm?: number;
+  average_monthly_mm?: number;
+  wettest_month?: {
+    name: string;
+    rainfall_mm: number;
+  };
+  driest_month?: {
+    name: string;
+    rainfall_mm: number;
+  };
+  year?: number;
+  monthly_data?: Array<{
+    month: number;
+    month_name: string;
+    monthly_rain_mm: number;
+  }>;
+  error?: string;
+  message?: string;
+}
+
+interface AssessmentResult {
+  message: string;
+  assessment_data: AssessmentData;
+  preliminary_results: {
+    estimated_annual_collection_liters: number;
+    potential_monthly_savings_inr: number;
+    feasibility_score: string;
+    annual_rainfall_used_mm?: number;
+    next_steps: string[];
+  };
+  soil_analysis?: SoilAnalysis;
+  rainfall_analysis?: RainfallAnalysis;
+  location?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+  };
+  status: string;
+}
+
 function ReportContent() {
   const searchParams = useSearchParams()
   const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(null)
+  const [assessmentResult, setAssessmentResult] = useState<AssessmentResult | null>(null)
   const [reportDate] = useState(new Date().toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',
@@ -34,25 +88,49 @@ function ReportContent() {
   }))
 
   useEffect(() => {
-    // Get data from URL params
-    const data: AssessmentData = {
-      name: searchParams.get('name') || '',
-      email: searchParams.get('email') || '',
-      phone: searchParams.get('phone') || '',
-      address: searchParams.get('address') || '',
-      city: searchParams.get('city') || '',
-      state: searchParams.get('state') || '',
-      pincode: searchParams.get('pincode') || '',
-      dwellers: searchParams.get('dwellers') || '',
-      roofArea: searchParams.get('roofArea') || '',
-      roofType: searchParams.get('roofType') || '',
-      openSpace: searchParams.get('openSpace') || '',
-      currentWaterSource: searchParams.get('currentWaterSource') || '',
-      monthlyWaterBill: searchParams.get('monthlyWaterBill') || '',
-      latitude: searchParams.get('latitude') ? parseFloat(searchParams.get('latitude')!) : undefined,
-      longitude: searchParams.get('longitude') ? parseFloat(searchParams.get('longitude')!) : undefined,
+    // Try to get data from localStorage first (new approach)
+    const storedResult = localStorage.getItem('assessmentResult');
+    const storedFormData = localStorage.getItem('assessmentFormData');
+    const storedLocation = localStorage.getItem('assessmentLocation');
+
+    if (storedResult && storedFormData) {
+      try {
+        const result = JSON.parse(storedResult);
+        const formData = JSON.parse(storedFormData);
+        const location = storedLocation ? JSON.parse(storedLocation) : null;
+        
+        setAssessmentResult(result);
+        setAssessmentData({
+          ...formData,
+          latitude: location?.latitude,
+          longitude: location?.longitude
+        });
+        
+        console.log('Assessment Result:', result);
+      } catch (error) {
+        console.error('Error parsing stored assessment data:', error);
+      }
+    } else {
+      // Fallback to URL params (old approach)
+      const data: AssessmentData = {
+        name: searchParams.get('name') || '',
+        email: searchParams.get('email') || '',
+        phone: searchParams.get('phone') || '',
+        address: searchParams.get('address') || '',
+        city: searchParams.get('city') || '',
+        state: searchParams.get('state') || '',
+        pincode: searchParams.get('pincode') || '',
+        dwellers: searchParams.get('dwellers') || '',
+        roofArea: searchParams.get('roofArea') || '',
+        roofType: searchParams.get('roofType') || '',
+        openSpace: searchParams.get('openSpace') || '',
+        currentWaterSource: searchParams.get('currentWaterSource') || '',
+        monthlyWaterBill: searchParams.get('monthlyWaterBill') || '',
+        latitude: searchParams.get('latitude') ? parseFloat(searchParams.get('latitude')!) : undefined,
+        longitude: searchParams.get('longitude') ? parseFloat(searchParams.get('longitude')!) : undefined,
+      }
+      setAssessmentData(data)
     }
-    setAssessmentData(data)
   }, [searchParams])
 
   if (!assessmentData) {
@@ -258,20 +336,198 @@ function ReportContent() {
                       <span className="dark:text-blue-200">Current Monthly Cost:</span>
                       <span className="font-medium dark:text-blue-100">{assessmentData.monthlyWaterBill ? `₹${assessmentData.monthlyWaterBill}` : 'N/A'}</span>
                     </div>
+                    {assessmentResult?.preliminary_results && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="dark:text-blue-200">Estimated Annual Collection:</span>
+                          <span className="font-medium dark:text-blue-100">{assessmentResult.preliminary_results.estimated_annual_collection_liters.toLocaleString()} L</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="dark:text-blue-200">Potential Monthly Savings:</span>
+                          <span className="font-medium dark:text-blue-100">₹{assessmentResult.preliminary_results.potential_monthly_savings_inr.toFixed(0)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="dark:text-blue-200">Feasibility Score:</span>
+                          <span className={`font-medium ${
+                            assessmentResult.preliminary_results.feasibility_score === 'Excellent' ? 'text-green-600 dark:text-green-400' :
+                            assessmentResult.preliminary_results.feasibility_score === 'High' ? 'text-blue-600 dark:text-blue-400' :
+                            assessmentResult.preliminary_results.feasibility_score === 'Medium' ? 'text-yellow-600 dark:text-yellow-400' :
+                            'text-red-600 dark:text-red-400'
+                          }`}>
+                            {assessmentResult.preliminary_results.feasibility_score}
+                          </span>
+                        </div>
+                        {assessmentResult.preliminary_results.annual_rainfall_used_mm && (
+                          <div className="flex justify-between">
+                            <span className="dark:text-blue-200">Annual Rainfall (Used):</span>
+                            <span className="font-medium dark:text-blue-100">{assessmentResult.preliminary_results.annual_rainfall_used_mm} mm</span>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
                 
                 <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border dark:border-green-800/30">
                   <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">Next Steps</h4>
                   <ul className="text-sm space-y-1 text-green-800 dark:text-green-200">
-                    <li>• Detailed site analysis required</li>
-                    <li>• Local rainfall data assessment</li>
-                    <li>• System design and cost estimation</li>
-                    <li>• Implementation planning</li>
+                    {assessmentResult?.preliminary_results?.next_steps ? (
+                      assessmentResult.preliminary_results.next_steps.map((step, index) => (
+                        <li key={index}>• {step}</li>
+                      ))
+                    ) : (
+                      <>
+                        <li>• Detailed site analysis required</li>
+                        <li>• Local rainfall data assessment</li>
+                        <li>• System design and cost estimation</li>
+                        <li>• Implementation planning</li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </CardContent>
             </Card>
+
+            {/* Rainfall Analysis Section */}
+            {assessmentResult?.rainfall_analysis && (
+              <Card className="p-6 bg-white dark:bg-gray-800">
+                <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Rainfall Analysis</h3>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex justify-between">
+                      <span className="dark:text-green-200">Annual Rainfall:</span>
+                      <span className="font-medium dark:text-green-100">{assessmentResult.rainfall_analysis.annual_rainfall_mm} mm</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="dark:text-green-200">Average Monthly:</span>
+                      <span className="font-medium dark:text-green-100">{assessmentResult.rainfall_analysis.average_monthly_mm} mm</span>
+                    </div>
+                    {assessmentResult.rainfall_analysis.wettest_month && (
+                      <div className="flex justify-between">
+                        <span className="dark:text-green-200">Wettest Month:</span>
+                        <span className="font-medium dark:text-green-100">
+                          {assessmentResult.rainfall_analysis.wettest_month.name} ({assessmentResult.rainfall_analysis.wettest_month.rainfall_mm} mm)
+                        </span>
+                      </div>
+                    )}
+                    {assessmentResult.rainfall_analysis.driest_month && (
+                      <div className="flex justify-between">
+                        <span className="dark:text-green-200">Driest Month:</span>
+                        <span className="font-medium dark:text-green-100">
+                          {assessmentResult.rainfall_analysis.driest_month.name} ({assessmentResult.rainfall_analysis.driest_month.rainfall_mm} mm)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Monthly Rainfall Data */}
+                  {assessmentResult.rainfall_analysis.monthly_data && (
+                    <div className="mt-4">
+                      <h4 className="text-md font-medium mb-3 text-gray-900 dark:text-white">Monthly Rainfall (mm)</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2 text-sm">
+                        {assessmentResult.rainfall_analysis.monthly_data.map((month, index) => (
+                          <div key={index} className="bg-gray-50 dark:bg-gray-700 p-2 rounded text-center">
+                            <div className="font-medium text-gray-900 dark:text-white">{month.month_name}</div>
+                            <div className="text-gray-600 dark:text-gray-300">{month.monthly_rain_mm} mm</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Seasonal Analysis */}
+                  {assessmentResult.rainfall_analysis.wettest_month && (
+                    <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <h4 className="text-md font-medium mb-2 text-green-900 dark:text-green-200">Collection Strategy</h4>
+                      <p className="text-sm text-green-800 dark:text-green-300">
+                        Based on the rainfall pattern, focus collection efforts during {assessmentResult.rainfall_analysis.wettest_month.name} when rainfall is highest. 
+                        Consider additional storage capacity to capture monsoon rainfall effectively.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* Soil Analysis */}
+            {assessmentResult?.soil_analysis && (
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center space-x-2 text-lg dark:text-white">
+                    <span>Soil Analysis</span>
+                  </CardTitle>
+                  <CardDescription className="dark:text-gray-400">
+                    Site-specific soil assessment for rainwater harvesting
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {assessmentResult.soil_analysis.error ? (
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border dark:border-yellow-800/30">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        <strong>Note:</strong> {assessmentResult.soil_analysis.error}
+                      </p>
+                      {assessmentResult.soil_analysis.message && (
+                        <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                          {assessmentResult.soil_analysis.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Soil Type</p>
+                          <p className="text-base font-medium dark:text-gray-200">{assessmentResult.soil_analysis.soil_type || 'Unknown'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Soil Class</p>
+                          <p className="text-base dark:text-gray-200">{assessmentResult.soil_analysis.soil_class || 'Unknown'}</p>
+                        </div>
+                      </div>
+                      
+                      {assessmentResult.soil_analysis.suitability && (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border dark:border-blue-800/30">
+                          <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">RWH Suitability Assessment</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="dark:text-blue-200">Suitability:</span>
+                              <span className={`font-medium ${
+                                assessmentResult.soil_analysis.suitability === 'Excellent' ? 'text-green-600 dark:text-green-400' :
+                                assessmentResult.soil_analysis.suitability === 'Very Good' ? 'text-blue-600 dark:text-blue-400' :
+                                assessmentResult.soil_analysis.suitability === 'Good' ? 'text-yellow-600 dark:text-yellow-400' :
+                                assessmentResult.soil_analysis.suitability === 'Fair' ? 'text-orange-600 dark:text-orange-400' :
+                                'text-red-600 dark:text-red-400'
+                              }`}>
+                                {assessmentResult.soil_analysis.suitability}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="dark:text-blue-200">Score:</span>
+                              <span className="font-medium dark:text-blue-100">{assessmentResult.soil_analysis.suitability_score}/10</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="dark:text-blue-200">Infiltration Rate:</span>
+                              <span className="font-medium dark:text-blue-100">{assessmentResult.soil_analysis.infiltration_rate || 'Unknown'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {assessmentResult.soil_analysis.recommendations && assessmentResult.soil_analysis.recommendations.length > 0 && (
+                        <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border dark:border-green-800/30">
+                          <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">Soil-Specific Recommendations</h4>
+                          <ul className="text-sm space-y-1 text-green-800 dark:text-green-200">
+                            {assessmentResult.soil_analysis.recommendations.map((recommendation, index) => (
+                              <li key={index}>• {recommendation}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Recommendations */}
             <Card className="dark:bg-gray-800 dark:border-gray-700">

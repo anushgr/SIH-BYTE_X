@@ -1,17 +1,67 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from typing import Optional
-from datetime import datetime
-import json
 import logging
-from ..database import get_db
-from ..models import Assessment
-from ..schemas import AssessmentCreate, AssessmentResponse
+import httpx
 from ..soil_service import get_soil_data
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/assessment", tags=["assessment"])
+
+async def get_rainfall_data(latitude: float, longitude: float):
+    """
+    Get rainfall data for the given coordinates using the internal rainfall API
+    """
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"http://127.0.0.1:8000/rainfall_api/monthly-rainfall",
+                params={"latitude": latitude, "longitude": longitude}
+            )
+            
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Calculate annual rainfall
+            annual_rainfall = sum(month["monthly_rain_mm"] for month in data["monthly"])
+            
+            # Find wettest and driest months
+            monthly_data = data["monthly"]
+            wettest_month = max(monthly_data, key=lambda x: x["monthly_rain_mm"])
+            driest_month = min(monthly_data, key=lambda x: x["monthly_rain_mm"])
+            
+            return {
+                "success": True,
+                "annual_rainfall_mm": round(annual_rainfall, 2),
+                "average_monthly_mm": round(annual_rainfall / 12, 2),
+                "wettest_month": {
+                    "name": wettest_month["month_name"],
+                    "rainfall_mm": wettest_month["monthly_rain_mm"]
+                },
+                "driest_month": {
+                    "name": driest_month["month_name"], 
+                    "rainfall_mm": driest_month["monthly_rain_mm"]
+                },
+                "monthly_data": monthly_data,
+                "year": data["year"],
+                "location": {
+                    "latitude": data["latitude"],
+                    "longitude": data["longitude"]
+                }
+            }
+        else:
+            logger.warning(f"Rainfall API returned status {response.status_code}")
+            return {
+                "error": f"Failed to fetch rainfall data (Status: {response.status_code})",
+                "success": False
+            }
+            
+    except Exception as e:
+        logger.error(f"Error fetching rainfall data: {str(e)}")
+        return {
+            "error": f"Rainfall data fetch error: {str(e)}",
+            "success": False
+        }
 
 class AssessmentData(BaseModel):
     name: str
@@ -32,12 +82,12 @@ class AssessmentData(BaseModel):
     accuracy: Optional[float] = None
 
 @router.post("/")
-async def create_assessment(assessment_data: AssessmentData, db: Session = Depends(get_db)):
+async def create_assessment(assessment_data: AssessmentData):
     """
-    Create a new rainwater harvesting assessment
+    Create a new rainwater harvesting assessment (no database storage)
     """
     try:
-        # Initialize soil data variables
+        # Initialize data variables
         soil_type = None
         soil_class = None
         soil_code = None
@@ -47,8 +97,12 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
         soil_rwh_recommendations = None
         soil_data_error = None
         
-        # Get soil data if coordinates are provided
+        rainfall_data = None
+        rainfall_error = None
+        
+        # Get environmental data if coordinates are provided
         if assessment_data.latitude and assessment_data.longitude:
+            # Get soil data
             try:
                 logger.info(f"Fetching soil data for coordinates: {assessment_data.latitude}, {assessment_data.longitude}")
                 soil_data = get_soil_data(assessment_data.latitude, assessment_data.longitude)
@@ -67,7 +121,7 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
                         soil_infiltration_rate = rwh_suitability.get("infiltration_rate")
                         recommendations = rwh_suitability.get("recommendations", [])
                         if recommendations:
-                            soil_rwh_recommendations = json.dumps(recommendations)
+                            soil_rwh_recommendations = recommendations
                     
                     logger.info(f"Successfully extracted soil data: {soil_type} ({soil_suitability})")
                 else:
@@ -77,66 +131,57 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
             except Exception as e:
                 soil_data_error = f"Soil data extraction error: {str(e)}"
                 logger.error(f"Error during soil data extraction: {str(e)}", exc_info=True)
-        
-        # Create assessment record
-        assessment = Assessment(
-            name=assessment_data.name,
-            email=assessment_data.email,
-            phone=assessment_data.phone,
-            address=assessment_data.address,
-            city=assessment_data.city,
-            state=assessment_data.state,
-            pincode=assessment_data.pincode,
-            dwellers=int(assessment_data.dwellers) if assessment_data.dwellers.isdigit() else 0,
-            roof_area=float(assessment_data.roofArea) if assessment_data.roofArea.replace('.', '').isdigit() else 0.0,
-            roof_type=assessment_data.roofType,
-            open_space=float(assessment_data.openSpace) if assessment_data.openSpace and assessment_data.openSpace.replace('.', '').isdigit() else None,
-            current_water_source=assessment_data.currentWaterSource,
-            monthly_water_bill=float(assessment_data.monthlyWaterBill) if assessment_data.monthlyWaterBill and assessment_data.monthlyWaterBill.replace('.', '').isdigit() else None,
-            latitude=assessment_data.latitude,
-            longitude=assessment_data.longitude,
-            accuracy=assessment_data.accuracy,
             
-            # Add soil data fields
-            soil_type=soil_type,
-            soil_class=soil_class,
-            soil_code=soil_code,
-            soil_suitability=soil_suitability,
-            soil_suitability_score=soil_suitability_score,
-            soil_infiltration_rate=soil_infiltration_rate,
-            soil_rwh_recommendations=soil_rwh_recommendations,
-            soil_data_error=soil_data_error,
-            
-            created_at=datetime.utcnow()
-        )
-        
-        db.add(assessment)
-        db.commit()
-        db.refresh(assessment)
+            # Get rainfall data
+            try:
+                logger.info(f"Fetching rainfall data for coordinates: {assessment_data.latitude}, {assessment_data.longitude}")
+                rainfall_data = await get_rainfall_data(assessment_data.latitude, assessment_data.longitude)
+                
+                if rainfall_data and rainfall_data.get("success"):
+                    logger.info(f"Successfully extracted rainfall data: {rainfall_data['annual_rainfall_mm']} mm/year")
+                else:
+                    rainfall_error = rainfall_data.get("error", "Failed to extract rainfall data") if rainfall_data else "No rainfall data returned"
+                    logger.warning(f"Failed to extract rainfall data: {rainfall_error}")
+                    
+            except Exception as e:
+                rainfall_error = f"Rainfall data extraction error: {str(e)}"
+                logger.error(f"Error during rainfall data extraction: {str(e)}", exc_info=True)
         
         # Calculate preliminary assessment metrics
         estimated_annual_collection = 0
         potential_savings = 0
+        roof_area = float(assessment_data.roofArea) if assessment_data.roofArea.replace('.', '').isdigit() else 0.0
+        monthly_bill = float(assessment_data.monthlyWaterBill) if assessment_data.monthlyWaterBill and assessment_data.monthlyWaterBill.replace('.', '').isdigit() else None
         
-        if assessment.roof_area and assessment.roof_area > 0:
-            # Rough calculation: roof_area * average_annual_rainfall * collection_efficiency
-            # Using average Indian rainfall of 1200mm and 80% collection efficiency
-            estimated_annual_collection = assessment.roof_area * 1200 * 0.8 * 0.092903  # Convert to liters
+        # Use actual rainfall data if available, otherwise fallback to average
+        annual_rainfall_mm = 1200  # Default average for India
+        if rainfall_data and rainfall_data.get("success"):
+            annual_rainfall_mm = rainfall_data.get("annual_rainfall_mm", 1200)
+        
+        if roof_area > 0:
+            # Collection calculation: roof_area * annual_rainfall * collection_efficiency * conversion_factor
+            # Collection efficiency: 80% (accounts for first flush, losses, etc.)
+            # Conversion factor: 0.092903 (sq ft * mm to liters)
+            collection_efficiency = 0.8
+            conversion_factor = 0.092903
+            estimated_annual_collection = roof_area * annual_rainfall_mm * collection_efficiency * conversion_factor
             
             # Rough savings calculation based on current bill
-            if assessment.monthly_water_bill:
-                potential_savings = min(assessment.monthly_water_bill * 0.3, assessment.monthly_water_bill * 12 * 0.4)
+            if monthly_bill:
+                # Estimate potential savings as 20-40% of current bill
+                potential_monthly_savings = min(monthly_bill * 0.3, monthly_bill * 0.4)
+                potential_savings = potential_monthly_savings
         
         # Enhanced feasibility scoring based on roof area and soil suitability
         feasibility_score = "Low"
-        if assessment.roof_area and assessment.roof_area >= 500:
+        if roof_area >= 500:
             if soil_suitability_score and soil_suitability_score >= 8:
                 feasibility_score = "Excellent"
             elif soil_suitability_score and soil_suitability_score >= 6:
                 feasibility_score = "High"
             else:
                 feasibility_score = "High"
-        elif assessment.roof_area and assessment.roof_area >= 200:
+        elif roof_area >= 200:
             if soil_suitability_score and soil_suitability_score >= 7:
                 feasibility_score = "High"
             else:
@@ -148,14 +193,6 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
         # Prepare soil information for response
         soil_info = None
         if soil_type and soil_type != "Unknown":
-            soil_recommendations = []
-            if soil_rwh_recommendations:
-                try:
-                    soil_recommendations = json.loads(soil_rwh_recommendations)
-                except Exception as json_error:
-                    logger.warning(f"Error parsing soil recommendations JSON: {json_error}")
-                    soil_recommendations = []
-            
             soil_info = {
                 "soil_type": soil_type,
                 "soil_class": soil_class,
@@ -163,7 +200,7 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
                 "suitability": soil_suitability,
                 "suitability_score": soil_suitability_score,
                 "infiltration_rate": soil_infiltration_rate,
-                "recommendations": soil_recommendations
+                "recommendations": soil_rwh_recommendations or []
             }
         elif soil_data_error:
             # Include error information in response
@@ -172,13 +209,39 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
                 "message": "Soil analysis not available for this location"
             }
         
+        # Prepare rainfall information for response
+        rainfall_info = None
+        if rainfall_data and rainfall_data.get("success"):
+            rainfall_info = {
+                "annual_rainfall_mm": rainfall_data["annual_rainfall_mm"],
+                "average_monthly_mm": rainfall_data["average_monthly_mm"],
+                "wettest_month": rainfall_data["wettest_month"],
+                "driest_month": rainfall_data["driest_month"],
+                "year": rainfall_data["year"],
+                "monthly_data": rainfall_data["monthly_data"]
+            }
+        elif rainfall_error:
+            rainfall_info = {
+                "error": rainfall_error,
+                "message": "Rainfall data not available for this location"
+            }
+        
         return {
-            "message": "Assessment created successfully",
-            "assessment_id": assessment.id,
+            "message": "Assessment completed successfully",
+            "assessment_data": {
+                "name": assessment_data.name,
+                "email": assessment_data.email,
+                "address": assessment_data.address,
+                "city": assessment_data.city,
+                "state": assessment_data.state,
+                "roof_area": roof_area,
+                "dwellers": int(assessment_data.dwellers) if assessment_data.dwellers.isdigit() else 0
+            },
             "preliminary_results": {
                 "estimated_annual_collection_liters": round(estimated_annual_collection, 2),
                 "potential_monthly_savings_inr": round(potential_savings, 2),
                 "feasibility_score": feasibility_score,
+                "annual_rainfall_used_mm": annual_rainfall_mm,
                 "next_steps": [
                     "Detailed site survey required",
                     "Local rainfall data analysis",
@@ -187,6 +250,7 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
                 ]
             },
             "soil_analysis": soil_info,
+            "rainfall_analysis": rainfall_info,
             "location": {
                 "latitude": assessment_data.latitude,
                 "longitude": assessment_data.longitude,
@@ -196,73 +260,8 @@ async def create_assessment(assessment_data: AssessmentData, db: Session = Depen
         }
         
     except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=500, detail=f"Failed to create assessment: {str(e)}")
-
-@router.get("/{assessment_id}")
-async def get_assessment(assessment_id: int, db: Session = Depends(get_db)):
-    """
-    Get assessment details by ID
-    """
-    assessment = db.query(Assessment).filter(Assessment.id == assessment_id).first()
-    
-    if not assessment:
-        raise HTTPException(status_code=404, detail="Assessment not found")
-    
-    # Prepare soil information for response
-    soil_info = None
-    if assessment.soil_type:
-        soil_recommendations = []
-        if assessment.soil_rwh_recommendations:
-            try:
-                soil_recommendations = json.loads(assessment.soil_rwh_recommendations)
-            except:
-                soil_recommendations = []
-        
-        soil_info = {
-            "soil_type": assessment.soil_type,
-            "soil_class": assessment.soil_class,
-            "soil_code": assessment.soil_code,
-            "suitability": assessment.soil_suitability,
-            "suitability_score": assessment.soil_suitability_score,
-            "infiltration_rate": assessment.soil_infiltration_rate,
-            "recommendations": soil_recommendations,
-            "data_error": assessment.soil_data_error
-        }
-    
-    # Convert assessment to dict and add soil analysis
-    assessment_dict = {
-        "id": assessment.id,
-        "name": assessment.name,
-        "email": assessment.email,
-        "phone": assessment.phone,
-        "address": assessment.address,
-        "city": assessment.city,
-        "state": assessment.state,
-        "pincode": assessment.pincode,
-        "dwellers": assessment.dwellers,
-        "roof_area": assessment.roof_area,
-        "roof_type": assessment.roof_type,
-        "open_space": assessment.open_space,
-        "current_water_source": assessment.current_water_source,
-        "monthly_water_bill": assessment.monthly_water_bill,
-        "latitude": assessment.latitude,
-        "longitude": assessment.longitude,
-        "accuracy": assessment.accuracy,
-        "created_at": assessment.created_at,
-        "updated_at": assessment.updated_at,
-        "soil_analysis": soil_info
-    }
-    
-    return assessment_dict
-
-@router.get("/")
-async def list_assessments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """
-    List all assessments with pagination
-    """
-    assessments = db.query(Assessment).offset(skip).limit(limit).all()
-    return assessments
+        logger.error(f"Assessment processing error: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to process assessment: {str(e)}")
 
 @router.get("/soil-data/{latitude}/{longitude}")
 async def get_soil_data_for_location(latitude: float, longitude: float):
