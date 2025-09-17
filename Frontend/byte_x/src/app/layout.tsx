@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Header } from '@/components/header'
 import { I18nClient } from '@/components/i18n-client'
+import { AuthProvider } from '@/contexts/auth-context'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -30,13 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <I18nClient />
-          <Header />
-          <main>
-            {children}
-          </main>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <I18nClient />
+            <Header />
+            <main>
+              {children}
+            </main>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )

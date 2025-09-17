@@ -11,6 +11,7 @@ export default function SignUp() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
     phone: "",
     password: "",
@@ -47,6 +48,11 @@ export default function SignUp() {
     if (!formData.lastName.trim()) {
       newErrors.lastName = "Last name is required";
     }
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -77,20 +83,39 @@ export default function SignUp() {
 
     setIsLoading(true);
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Account created successfully! Please check your email for verification.");
-      // Redirect to login or dashboard
-      window.location.href = "/login";
+      const response = await fetch('http://127.0.0.1:8000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          full_name: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone || null,
+          organization: formData.organization || null
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("Account created successfully! You can now log in.");
+        // Redirect to login
+        window.location.href = "/login";
+      } else {
+        const errorData = await response.json();
+        setErrors({ general: errorData.detail || "Registration failed. Please try again." });
+      }
     } catch (err) {
-      setErrors({ general: "Registration failed. Please try again." });
+      setErrors({ general: "Network error. Please check if the server is running." });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isFormValid = formData.firstName && formData.lastName && formData.email && 
+  const isFormValid = formData.firstName && formData.lastName && formData.username && formData.email && 
                      formData.password && formData.confirmPassword && formData.acceptTerms;
 
   return (
@@ -115,167 +140,182 @@ export default function SignUp() {
 
         {/* Signup Card with ScrollFloat */}
         <Card className="shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-            <CardHeader className="space-y-1 pb-4">
-              <CardTitle className="text-2xl text-center dark:text-white">Sign Up</CardTitle>
-              <CardDescription className="text-center dark:text-gray-300">
-                Create your account to access personalized assessments
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {errors.general && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700 text-sm">{errors.general}</p>
-                  </div>
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl text-center dark:text-white">Sign Up</CardTitle>
+            <CardDescription className="text-center dark:text-gray-300">
+              Create your account to access personalized assessments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {errors.general && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-700 text-sm">{errors.general}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name *</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    placeholder="John"
+                    className={`h-11 ${errors.firstName ? 'border-red-500' : ''}`}
+                  />
+                  {errors.firstName && (
+                    <p className="text-red-600 text-xs">{errors.firstName}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    placeholder="Doe"
+                    className={`h-11 ${errors.lastName ? 'border-red-500' : ''}`}
+                  />
+                  {errors.lastName && (
+                    <p className="text-red-600 text-xs">{errors.lastName}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="john.doe@example.com"
+                  className={`h-11 ${errors.email ? 'border-red-500' : ''}`}
+                />
+                {errors.email && (
+                  <p className="text-red-600 text-xs">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="username">Username *</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  placeholder="johndoe123"
+                  className={`h-11 ${errors.username ? 'border-red-500' : ''}`}
+                />
+                {errors.username && (
+                  <p className="text-red-600 text-xs">{errors.username}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+91 98765 43210"
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="organization">Organization (Optional)</Label>
+                <Input
+                  id="organization"
+                  name="organization"
+                  value={formData.organization}
+                  onChange={handleInputChange}
+                  placeholder="Your company or institution"
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Choose a strong password"
+                  className={`h-11 ${errors.password ? 'border-red-500' : ''}`}
+                />
+                {errors.password && (
+                  <p className="text-red-600 text-xs">{errors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirm your password"
+                  className={`h-11 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                />
+                {errors.confirmPassword && (
+                  <p className="text-red-600 text-xs">{errors.confirmPassword}</p>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start space-x-2">
+                  <input
+                    id="acceptTerms"
+                    name="acceptTerms"
+                    type="checkbox"
+                    checked={formData.acceptTerms}
+                    onChange={handleInputChange}
+                    className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1 ${errors.acceptTerms ? 'border-red-500' : ''}`}
+                  />
+                  <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-tight">
+                    I accept the{" "}
+                    <Link href="/terms" className="text-blue-600 hover:text-blue-700">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                {errors.acceptTerms && (
+                  <p className="text-red-600 text-xs">{errors.acceptTerms}</p>
                 )}
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input
-                      id="firstName"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="John"
-                      className={`h-11 ${errors.firstName ? 'border-red-500' : ''}`}
-                    />
-                    {errors.firstName && (
-                      <p className="text-red-600 text-xs">{errors.firstName}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input
-                      id="lastName"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      placeholder="Doe"
-                      className={`h-11 ${errors.lastName ? 'border-red-500' : ''}`}
-                    />
-                    {errors.lastName && (
-                      <p className="text-red-600 text-xs">{errors.lastName}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
+                <div className="flex items-start space-x-2">
+                  <input
+                    id="newsletter"
+                    name="newsletter"
+                    type="checkbox"
+                    checked={formData.newsletter}
                     onChange={handleInputChange}
-                    placeholder="john.doe@example.com"
-                    className={`h-11 ${errors.email ? 'border-red-500' : ''}`}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
                   />
-                  {errors.email && (
-                    <p className="text-red-600 text-xs">{errors.email}</p>
-                  )}
+                  <Label htmlFor="newsletter" className="text-sm text-gray-600">
+                    Subscribe to our newsletter for water conservation tips and updates
+                  </Label>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+91 98765 43210"
-                    className="h-11"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="organization">Organization (Optional)</Label>
-                  <Input
-                    id="organization"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleInputChange}
-                    placeholder="Your company or institution"
-                    className="h-11"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password *</Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Choose a strong password"
-                    className={`h-11 ${errors.password ? 'border-red-500' : ''}`}
-                  />
-                  {errors.password && (
-                    <p className="text-red-600 text-xs">{errors.password}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    placeholder="Confirm your password"
-                    className={`h-11 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                  />
-                  {errors.confirmPassword && (
-                    <p className="text-red-600 text-xs">{errors.confirmPassword}</p>
-                  )}
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-2">
-                    <input
-                      id="acceptTerms"
-                      name="acceptTerms"
-                      type="checkbox"
-                      checked={formData.acceptTerms}
-                      onChange={handleInputChange}
-                      className={`h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1 ${errors.acceptTerms ? 'border-red-500' : ''}`}
-                    />
-                    <Label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-tight">
-                      I accept the{" "}
-                      <Link href="/terms" className="text-blue-600 hover:text-blue-700">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-blue-600 hover:text-blue-700">
-                        Privacy Policy
-                      </Link>
-                    </Label>
-                  </div>
-                  {errors.acceptTerms && (
-                    <p className="text-red-600 text-xs">{errors.acceptTerms}</p>
-                  )}
-
-                  <div className="flex items-start space-x-2">
-                    <input
-                      id="newsletter"
-                      name="newsletter"
-                      type="checkbox"
-                      checked={formData.newsletter}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
-                    />
-                    <Label htmlFor="newsletter" className="text-sm text-gray-600">
-                      Subscribe to our newsletter for water conservation tips and updates
-                    </Label>
-                  </div>
-                </div>
+              </div>
 
                 <Button
                   type="submit"
-                  className="w-full h-11 text-base !text-black dark:!text-black"
+                  className="w-full h-11 text-base rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
                   disabled={!isFormValid || isLoading}
                 >
                   {isLoading ? (
