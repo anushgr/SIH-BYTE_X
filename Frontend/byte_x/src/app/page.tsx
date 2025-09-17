@@ -3,6 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import CountUp from "@/components/CountUp"
+import AnimatedBenefits from "@/components/AnimatedBenefits"
+import SpotlightCard from "@/components/SpotlightCard"
 
 export default function Home() {
   return (
@@ -13,7 +16,7 @@ export default function Home() {
           <div className="mb-8">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Discover Your{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 dark:from-blue-400 dark:to-green-400">
+              <span className="gradient-text-animated">
                 Rainwater Harvesting
               </span>{" "}
               Potential
@@ -23,10 +26,10 @@ export default function Home() {
               Get personalized recommendations for sustainable water management and groundwater conservation.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="text-lg px-8 py-3">
+              <Button size="lg" asChild className="text-lg px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
                 <Link href="/assessment">Check Your Potential</Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 transition-all duration-300">
                 Learn More
               </Button>
             </div>
@@ -35,15 +38,39 @@ export default function Home() {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">68%</div>
+              <CountUp 
+                end={68} 
+                suffix="%" 
+                className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2"
+                duration={2500}
+              />
               <div className="text-gray-600 dark:text-gray-300">Water Stress Reduction Potential</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">₹15K</div>
+              <CountUp 
+                end={15} 
+                prefix="₹" 
+                suffix="K" 
+                className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2"
+                duration={2500}
+              />
               <div className="text-gray-600 dark:text-gray-300">Average Annual Savings</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">3-5 Years</div>
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                <CountUp 
+                  end={3} 
+                  className="inline"
+                  duration={2000}
+                />
+                -
+                <CountUp 
+                  end={5} 
+                  suffix=" Years" 
+                  className="inline"
+                  duration={2000}
+                />
+              </div>
               <div className="text-gray-600 dark:text-gray-300">Typical ROI Period</div>
             </div>
           </div>
@@ -63,77 +90,89 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">🏠</span>
-                </div>
-                <CardTitle className="dark:text-white">Feasibility Analysis</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Detailed assessment of rooftop rainwater harvesting potential based on your property specifications
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">🏠</span>
+                  </div>
+                  <CardTitle className="dark:text-white">Feasibility Analysis</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Detailed assessment of rooftop rainwater harvesting potential based on your property specifications
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">🌧️</span>
-                </div>
-                <CardTitle className="dark:text-white">Rainfall Data</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Local rainfall patterns and runoff generation capacity analysis for your specific location
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">🌧️</span>
+                  </div>
+                  <CardTitle className="dark:text-white">Rainfall Data</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Local rainfall patterns and runoff generation capacity analysis for your specific location
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">💧</span>
-                </div>
-                <CardTitle className="dark:text-white">Groundwater Info</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Information about principal aquifer and depth to groundwater level in your area
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">💧</span>
+                  </div>
+                  <CardTitle className="dark:text-white">Groundwater Info</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Information about principal aquifer and depth to groundwater level in your area
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">🔧</span>
-                </div>
-                <CardTitle className="dark:text-white">Structure Design</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Recommended dimensions for recharge pits, trenches, and shafts based on your requirements
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">🔧</span>
+                  </div>
+                  <CardTitle className="dark:text-white">Structure Design</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Recommended dimensions for recharge pits, trenches, and shafts based on your requirements
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">💰</span>
-                </div>
-                <CardTitle className="dark:text-white">Cost Analysis</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Detailed cost estimation and comprehensive cost-benefit analysis for your project
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">💰</span>
+                  </div>
+                  <CardTitle className="dark:text-white">Cost Analysis</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Detailed cost estimation and comprehensive cost-benefit analysis for your project
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
 
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
-              <CardHeader>
-                <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-4">
-                  <span className="text-2xl">📍</span>
-                </div>
-                <CardTitle className="dark:text-white">GIS Integration</CardTitle>
-                <CardDescription className="dark:text-gray-300">
-                  Advanced GIS-based modeling and algorithmic analysis for precise recommendations
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center mb-4">
+                    <span className="text-2xl">📍</span>
+                  </div>
+                  <CardTitle className="dark:text-white">GIS Integration</CardTitle>
+                  <CardDescription className="dark:text-gray-300">
+                    Advanced GIS-based modeling and algorithmic analysis for precise recommendations
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </SpotlightCard>
           </div>
         </div>
       </section>
@@ -141,40 +180,51 @@ export default function Home() {
       {/* Benefits Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+            Why Rainwater Harvesting Matters
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Why Rainwater Harvesting Matters
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+              <AnimatedBenefits>
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Groundwater Conservation</h3>
+                      <p className="text-gray-600 dark:text-gray-300">Replenish depleting groundwater levels and contribute to sustainable water management</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Groundwater Conservation</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Replenish depleting groundwater levels and contribute to sustainable water management</p>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-green-600 dark:text-green-400 font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cost Savings</h3>
+                      <p className="text-gray-600 dark:text-gray-300">Reduce water bills and dependency on municipal water supply systems</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-purple-600 dark:text-purple-400 font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Environmental Impact</h3>
+                      <p className="text-gray-600 dark:text-gray-300">Reduce urban flooding and soil erosion while improving local water quality</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-4">
+                    <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-orange-600 dark:text-orange-400 font-bold text-sm">4</span>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Energy Efficiency</h3>
+                      <p className="text-gray-600 dark:text-gray-300">Reduce energy consumption for water pumping and treatment processes</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-green-600 dark:text-green-400 font-bold text-sm">2</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cost Savings</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Reduce water bills and dependency on municipal water supply systems</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold text-sm">3</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Environmental Impact</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Reduce urban flooding and contribute to climate change mitigation efforts</p>
-                  </div>
-                </div>
-              </div>
+              </AnimatedBenefits>
             </div>
             <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/50 dark:to-cyan-900/50 rounded-2xl p-8">
               <div className="text-center">
@@ -183,7 +233,7 @@ export default function Home() {
                 <p className="text-gray-600 dark:text-gray-300 mb-6">
                   Be part of India's largest groundwater conservation initiative supported by CGWB
                 </p>
-                <Button size="lg" asChild>
+                <Button size="lg" asChild className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
                   <Link href="/assessment">Start Your Assessment</Link>
                 </Button>
               </div>

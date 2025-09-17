@@ -31,47 +31,59 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 max-w-screen-2xl items-center">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60 shadow-lg">
+      <div className="container flex h-16 max-w-screen-2xl items-center">
         {/* Logo and Brand */}
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Droplets className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            <span className="hidden font-bold sm:inline-block" data-translate="RTRWH Platform">
+        <div className="mr-6 hidden md:flex">
+          <Link href="/" className="mr-8 flex items-center space-x-3 group">
+            <div className="relative">
+              <Droplets className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
+              <div className="absolute inset-0 bg-blue-600/20 dark:bg-blue-400/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <span className="hidden font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent sm:inline-block" data-translate="RTRWH Platform">
               RTRWH Platform
             </span>
           </Link>
         </div>
 
         {/* Mobile Logo */}
-        <div className="mr-4 flex md:hidden">
-          <Link href="/" className="flex items-center space-x-2">
-            <Droplets className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            <span className="font-bold" data-translate="RTRWH">RTRWH</span>
+        <div className="mr-6 flex md:hidden">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <Droplets className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-blue-600/20 dark:bg-blue-400/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+            <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent" data-translate="RTRWH">RTRWH</span>
           </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="flex items-center gap-4 text-sm lg:gap-6">
+        <nav className="flex items-center gap-2 text-sm lg:gap-4">
           <Link
             href="/"
-            className={`transition-colors hover:text-foreground/80 ${
+            className={`relative px-4 py-2 rounded-full transition-all duration-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
               isActive('/') 
-                ? 'text-foreground font-medium' 
-                : 'text-foreground/60'
+                ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-900/30' 
+                : 'text-foreground/70 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             <span data-translate="Home">Home</span>
+            {isActive('/') && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+            )}
           </Link>
           <Link
             href="/assessment"
-            className={`transition-colors hover:text-foreground/80 ${
+            className={`relative px-4 py-2 rounded-full transition-all duration-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
               isActive('/assessment') 
-                ? 'text-foreground font-medium' 
-                : 'text-foreground/60'
+                ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-900/30' 
+                : 'text-foreground/70 hover:text-blue-600 dark:hover:text-blue-400'
             }`}
           >
             <span data-translate="Assessment">Assessment</span>
+            {isActive('/assessment') && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+            )}
           </Link>
         </nav>
 
@@ -82,28 +94,28 @@ export function Header() {
           </div>
           
           {/* Auth buttons */}
-          <nav className="flex items-center gap-2">
+          <nav className="flex items-center gap-3">
             {!isLoading && (
               <>
                 {user ? (
                   /* User is logged in - show user menu */
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="text-sm">
+                      <Button variant="ghost" className="flex items-center gap-3 h-auto p-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300">
+                        <Avatar className="h-9 w-9 ring-2 ring-blue-200 dark:ring-blue-800">
+                          <AvatarFallback className="text-sm bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
                             {user.full_name 
                               ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
                               : user.username.charAt(0).toUpperCase()
                             }
                           </AvatarFallback>
                         </Avatar>
-                        <span className="hidden sm:inline">
+                        <span className="hidden sm:inline font-medium">
                           {user.full_name || user.username}
                         </span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-48 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-white/20 dark:border-gray-700/30">
                       <DropdownMenuLabel>
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-medium leading-none">
@@ -115,7 +127,7 @@ export function Header() {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleLogout}>
+                      <DropdownMenuItem onClick={handleLogout} className="hover:bg-red-50 dark:hover:bg-red-900/30 cursor-pointer">
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
                       </DropdownMenuItem>
@@ -125,10 +137,10 @@ export function Header() {
                   /* User is not logged in - show login/signup buttons */
                   pathname !== '/login' && pathname !== '/signup' && (
                     <>
-                      <Button variant="ghost" size="sm" asChild>
+                      <Button variant="ghost" size="sm" asChild className="rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300">
                         <Link href="/login"><span data-translate="Sign In">Sign In</span></Link>
                       </Button>
-                      <Button size="sm" asChild>
+                      <Button size="sm" asChild className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
                         <Link href="/signup"><span data-translate="Sign Up">Sign Up</span></Link>
                       </Button>
                     </>
@@ -138,8 +150,10 @@ export function Header() {
             )}
             
             {/* Theme toggle */}
-            <LanguageToggle />
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
           </nav>
         </div>
       </div>

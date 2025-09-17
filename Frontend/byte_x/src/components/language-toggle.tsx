@@ -25,6 +25,9 @@ export function LanguageToggle() {
         variant={current === "en" ? "default" : "outline"}
         size="sm"
         onClick={() => switchTo("en")}
+        className={current === "en" 
+          ? "rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300" 
+          : "rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300"}
       >
         EN
       </Button>
@@ -32,6 +35,9 @@ export function LanguageToggle() {
         variant={current === "hi" ? "default" : "outline"}
         size="sm"
         onClick={() => switchTo("hi")}
+        className={current === "hi" 
+          ? "rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300" 
+          : "rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-300"}
       >
         हिन्दी
       </Button>

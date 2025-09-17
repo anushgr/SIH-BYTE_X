@@ -341,7 +341,7 @@ export default function Assessment() {
                     disabled={isLoading}
                     variant="default"
                     size="sm"
-                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                    className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
                   >
                     {isLoading ? "Getting Location..." : "Get Location automatically"}
                   </Button>
@@ -587,8 +587,8 @@ export default function Assessment() {
               <Button
                 type="submit"
                 size="lg"
-                className="px-12 py-3 text-lg"
-                disabled={!isFormValid() || isSubmitting}
+                className="px-12 py-3 text-lg rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+                disabled={!isFormValid()}
               >
                 {isSubmitting ? "Generating Report..." : "Generate Assessment Report"}
               </Button>
