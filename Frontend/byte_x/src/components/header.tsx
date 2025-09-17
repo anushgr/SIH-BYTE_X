@@ -31,7 +31,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60 shadow-lg">
+    <header className="sticky top-0 z-[1000] w-full border-b border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60 shadow-lg">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         {/* Logo and Brand */}
         <div className="mr-6 hidden md:flex">

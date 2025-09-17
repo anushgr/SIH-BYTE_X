@@ -108,10 +108,20 @@ export default function Assessment() {
   };
 
   const geocodeManualAddress = async () => {
-    const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.pincode}`.replace(/,\s*,/g, ',').replace(/^,|,$/g, '');
-    
-    if (!formData.address || formData.address.trim().length < 3) {
-      setGeocodingStatus("Please enter a valid address to get coordinates");
+    // Build a robust query using whatever parts user has provided
+    const parts = [formData.address, formData.city, formData.state, formData.pincode]
+      .map(p => (p || '').trim())
+      .filter(p => p.length > 0);
+    const fullAddress = parts.join(', ');
+
+    // Require at least city or state (or a 3+ char address)
+    const hasMinInfo = (
+      (formData.address && formData.address.trim().length >= 3) ||
+      (formData.city && formData.city.trim().length >= 2) ||
+      (formData.state && formData.state.trim().length >= 2)
+    );
+    if (!hasMinInfo || fullAddress.length < 3) {
+      setGeocodingStatus("Please enter address/city/state (and PIN if known) to get coordinates");
       return;
     }
 
@@ -366,7 +376,18 @@ export default function Assessment() {
                     <Button
                       type="button"
                       onClick={geocodeManualAddress}
-                      disabled={isGeocodingLoading || !formData.address}
+                      disabled={(function(){
+                        const addr = (formData.address || '').trim();
+                        const city = (formData.city || '').trim();
+                        const state = (formData.state || '').trim();
+                        const pin = (formData.pincode || '').trim();
+                        const hasAddress = addr.length >= 3;
+                        const hasCity = city.length >= 2;
+                        const hasPincode = pin.length >= 3;
+                        const hasOnlyState = state.length >= 2 && !hasAddress && !hasCity && !hasPincode;
+                        const canEnable = (hasAddress || hasCity || hasPincode) && !hasOnlyState;
+                        return isGeocodingLoading || !canEnable;
+                      })()}
                       variant="outline"
                       size="default"
                       className="whitespace-nowrap"
@@ -377,7 +398,7 @@ export default function Assessment() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city">City *</Label>
                     <Input
                       id="city"
                       name="city"
@@ -387,7 +408,7 @@ export default function Assessment() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="state">State</Label>
+                    <Label htmlFor="state">State *</Label>
                     <Input
                       id="state"
                       name="state"
