@@ -9,3 +9,6 @@ bcrypt
 python-jose[cryptography]
 python-multipart
 passlib[bcrypt]
+rasterio
+geopandas
+pyproj

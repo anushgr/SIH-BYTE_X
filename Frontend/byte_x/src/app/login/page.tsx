@@ -170,8 +170,8 @@ export default function Login() {
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h3 className="font-semibold text-blue-900 mb-2">Test Account</h3>
               <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Username:</strong> testuser</p>
-                <p><strong>Password:</strong> testpass123</p>
+                <p><strong>Username:</strong> admin</p>
+                <p><strong>Password:</strong> 12345678</p>
                 <p className="text-xs">Create this account first using the signup page, or create your own account</p>
               </div>
             </div>

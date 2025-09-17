@@ -6,13 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState, useEffect, useMemo } from "react"
-import { getCurrentLocationWithAddress } from "@/utils/geolocation"
+import { getCurrentLocationWithAddress, forwardGeocode } from "@/utils/geolocation"
 import type { LocationResult } from "@/types/geolocation"
 import dynamic from "next/dynamic"
 import { useAuth } from "@/contexts/auth-context"
+import { useRouter } from "next/navigation"
 
 export default function Assessment() {
   const { user, isLoading: authLoading } = useAuth()
+  const router = useRouter()
   
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +41,8 @@ export default function Assessment() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
   const [geocodingStatus, setGeocodingStatus] = useState<string>("");
+  const [lastGeocodedAddress, setLastGeocodedAddress] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Dynamically import the map on client only
   const IndiaMap = useMemo(() => dynamic(() => import("@/components/IndiaMap"), { ssr: false }), [])
@@ -92,6 +96,7 @@ export default function Assessment() {
         }));
         
         setGeocodingStatus("Address details filled automatically!");
+        setLastGeocodedAddress(addressData.address || "");
       } else {
         setGeocodingStatus(`Coordinates detected, but couldn't get address: ${result.geocoding.error || 'Unknown error'}`);
       }
@@ -102,12 +107,141 @@ export default function Assessment() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const geocodeManualAddress = async () => {
+    const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, ${formData.pincode}`.replace(/,\s*,/g, ',').replace(/^,|,$/g, '');
+    
+    if (!formData.address || formData.address.trim().length < 3) {
+      setGeocodingStatus("Please enter a valid address to get coordinates");
+      return;
+    }
+
+    // Don't geocode if it's the same address we just geocoded
+    if (fullAddress === lastGeocodedAddress) {
+      return;
+    }
+
+    setIsGeocodingLoading(true);
+    setLocationError("");
+    setGeocodingStatus("Getting coordinates for your address...");
+
+    try {
+      const result = await forwardGeocode(fullAddress);
+      
+      if (result.success && result.data) {
+        setLocation({
+          latitude: result.data.coordinates.latitude,
+          longitude: result.data.coordinates.longitude,
+          accuracy: 0, // Manual geocoding doesn't provide accuracy
+        });
+        
+        // Update form fields with more accurate data from geocoding
+        setFormData(prev => ({
+          ...prev,
+          city: result.data?.city || prev.city,
+          state: result.data?.state || prev.state,
+          pincode: result.data?.pincode || prev.pincode,
+        }));
+        
+        setGeocodingStatus(`✓ Coordinates found! Lat: ${result.data.coordinates.latitude.toFixed(6)}, Lng: ${result.data.coordinates.longitude.toFixed(6)}`);
+        setLastGeocodedAddress(fullAddress);
+      } else {
+        setLocationError(result.error || "Could not find coordinates for this address");
+        setGeocodingStatus("❌ Could not find coordinates for this address. Please check the address or use GPS location.");
+      }
+    } catch (error) {
+      setLocationError((error as Error).message || "Failed to geocode address");
+      setGeocodingStatus("❌ Error getting coordinates. Please try again or use GPS location.");
+    } finally {
+      setIsGeocodingLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data:", formData);
-    console.log("Location:", location);
-    // Here you would typically send the data to your backend
-    alert("Assessment submitted! This would normally process your data and show results.");
+    
+    if (!isFormValid()) {
+      alert("Please fill in all required fields and get your GPS location");
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Prepare data for backend
+      const assessmentData = {
+        ...formData,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        accuracy: location?.accuracy
+      };
+
+      console.log("Submitting Assessment Data:", assessmentData);
+      
+      // Call backend API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/assessment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(assessmentData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log("Backend Response:", result);
+
+      // Navigate to report page with data
+      const queryParams = new URLSearchParams({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || '',
+        address: formData.address,
+        city: formData.city || '',
+        state: formData.state || '',
+        pincode: formData.pincode || '',
+        dwellers: formData.dwellers,
+        roofArea: formData.roofArea,
+        roofType: formData.roofType || '',
+        openSpace: formData.openSpace || '',
+        currentWaterSource: formData.currentWaterSource || '',
+        monthlyWaterBill: formData.monthlyWaterBill || '',
+        latitude: location?.latitude?.toString() || '',
+        longitude: location?.longitude?.toString() || '',
+      });
+
+      router.push(`/report?${queryParams.toString()}`);
+      
+    } catch (error) {
+      console.error("Assessment submission error:", error);
+      
+      // Still navigate to report page even if API fails (for now)
+      alert("Assessment data processed! Note: Backend API connection failed, but proceeding to report.");
+      
+      const queryParams = new URLSearchParams({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || '',
+        address: formData.address,
+        city: formData.city || '',
+        state: formData.state || '',
+        pincode: formData.pincode || '',
+        dwellers: formData.dwellers,
+        roofArea: formData.roofArea,
+        roofType: formData.roofType || '',
+        openSpace: formData.openSpace || '',
+        currentWaterSource: formData.currentWaterSource || '',
+        monthlyWaterBill: formData.monthlyWaterBill || '',
+        latitude: location?.latitude?.toString() || '',
+        longitude: location?.longitude?.toString() || '',
+      });
+
+      router.push(`/report?${queryParams.toString()}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = () => {
@@ -137,7 +271,6 @@ export default function Assessment() {
             <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 dark:text-white">
-                  <span className="text-2xl">👤</span>
                   <span>Personal Information</span>
                   {user && (
                     <span className="ml-auto text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
@@ -200,7 +333,6 @@ export default function Assessment() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl">📍</span>
                     <CardTitle className="dark:text-white">Location Details</CardTitle>
                   </div>
                   <Button
@@ -221,14 +353,27 @@ export default function Assessment() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="address">Property Address *</Label>
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    placeholder="Enter your complete address"
-                    required
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Enter your complete address"
+                      required
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      onClick={geocodeManualAddress}
+                      disabled={isGeocodingLoading || !formData.address}
+                      variant="outline"
+                      size="default"
+                      className="whitespace-nowrap"
+                    >
+                      {isGeocodingLoading ? "Getting..." : "Get Coordinates"}
+                    </Button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
@@ -267,12 +412,15 @@ export default function Assessment() {
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="mb-3">
                     <h3 className="font-semibold text-blue-900">GPS Coordinates & Address</h3>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Two ways to get coordinates: Use "Get Location automatically" for GPS, or enter address manually and click "Get Coordinates"
+                    </p>
                   </div>
                   
                   {location && (
                     <div className="bg-green-50 p-3 rounded border border-green-200 mb-3">
                       <div className="flex items-center space-x-2 mb-2">
-                        <span className="text-green-600">✅</span>
+                        <span className="text-green-600">✓</span>
                         <span className="text-green-800 font-medium">Location Detected</span>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm text-green-700">
@@ -284,22 +432,40 @@ export default function Assessment() {
                   )}
                   
                   {geocodingStatus && (
-                    <div className="bg-blue-50 p-3 rounded border border-blue-200 mb-3">
+                    <div className={`p-3 rounded border mb-3 ${
+                      geocodingStatus.includes('✓') ? 'bg-green-50 border-green-200' : 
+                      geocodingStatus.includes('✗') ? 'bg-red-50 border-red-200' :
+                      'bg-blue-50 border-blue-200'
+                    }`}>
                       <div className="flex items-center space-x-2">
-                        <span className="text-blue-600">🗺️</span>
-                        <span className="text-blue-800 text-sm">{geocodingStatus}</span>
+                        <span className={
+                          geocodingStatus.includes('✓') ? 'text-green-600' :
+                          geocodingStatus.includes('✗') ? 'text-red-600' :
+                          'text-blue-600'
+                        }>
+                          {geocodingStatus.includes('Getting coordinates') ? '↻' : 
+                           geocodingStatus.includes('✓') ? '✓' :
+                           geocodingStatus.includes('✗') ? '✗' : 'ⓘ'}
+                        </span>
+                        <span className={`text-sm ${
+                          geocodingStatus.includes('✓') ? 'text-green-800' :
+                          geocodingStatus.includes('✗') ? 'text-red-800' :
+                          'text-blue-800'
+                        }`}>
+                          {geocodingStatus}
+                        </span>
                       </div>
                     </div>
                   )}
                   
                   {locationError && (
                     <div className="bg-red-50 p-3 rounded border border-red-200">
-                      <span className="text-red-700">❌ {locationError}</span>
+                      <span className="text-red-700">✗ {locationError}</span>
                     </div>
                   )}
                   
                   <div className="text-xs text-blue-600 mt-2">
-                    💡 Your coordinates help us fetch local rainfall data and groundwater information for accurate assessment.
+                    Your coordinates help us fetch local rainfall data and groundwater information for accurate assessment.
                   </div>
 
                   {/* Map showing user and stations */}
@@ -320,7 +486,6 @@ export default function Assessment() {
             <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 dark:text-white">
-                  <span className="text-2xl">🏠</span>
                   <span>Property Specifications</span>
                 </CardTitle>
                 <CardDescription className="dark:text-gray-300">
@@ -418,18 +583,18 @@ export default function Assessment() {
             </Card>
 
             {/* Submit Button */}
-            <div className="flex justify-center pt-6">
+            <div className="flex justify-center pt-16">
               <Button
                 type="submit"
                 size="lg"
-                className="px-12 py-3 text-lg rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+                className="px-12 py-3 text-lg"
                 disabled={!isFormValid()}
               >
-                Generate Assessment Report
+                {isSubmitting ? "Generating Report..." : "Generate Assessment Report"}
               </Button>
             </div>
             
-            {!isFormValid() && (
+            {!isFormValid() && !isSubmitting && (
               <p className="text-center text-sm text-gray-600">
                 Please fill in all required fields (*) and get your GPS location to proceed
               </p>

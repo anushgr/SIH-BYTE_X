@@ -147,6 +147,101 @@ export function getCurrentLocationWithAddress(): Promise<LocationResult> {
 }
 
 /**
+ * Forward geocoding - convert address to coordinates
+ * @param {string} address - The address to geocode
+ * @returns {Promise<GeocodeResult>} Coordinates and address details
+ */
+export async function forwardGeocode(address: string): Promise<GeocodeResult> {
+  try {
+    if (!address || address.trim().length < 3) {
+      return {
+        success: false,
+        error: "Address is too short for geocoding"
+      };
+    }
+
+    const encodedAddress = encodeURIComponent(address.trim());
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAddress}&addressdetails=1&limit=1`;
+
+    const res = await fetch(url);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      return {
+        success: false,
+        error: "No coordinates found for the given address"
+      };
+    }
+
+    const result = data[0];
+    const lat = parseFloat(result.lat);
+    const lon = parseFloat(result.lon);
+
+    if (!validateCoordinates(lat, lon)) {
+      return {
+        success: false,
+        error: "Invalid coordinates returned from geocoding service"
+      };
+    }
+
+    const { 
+      city, 
+      town, 
+      village, 
+      state, 
+      postcode, 
+      country,
+      road,
+      house_number,
+      suburb,
+      neighbourhood
+    } = result.address || {};
+
+    // Build a formatted address
+    const addressParts = [];
+    if (house_number) addressParts.push(house_number);
+    if (road) addressParts.push(road);
+    if (neighbourhood) addressParts.push(neighbourhood);
+    if (suburb) addressParts.push(suburb);
+
+    const formattedAddress = addressParts.length > 0 
+      ? addressParts.join(', ')
+      : result.display_name.split(',').slice(0, 2).join(', ');
+
+    const geocodeResult: GeocodeResult = {
+      success: true,
+      data: {
+        address: formattedAddress,
+        fullAddress: result.display_name,
+        city: city || town || village || '',
+        state: state || '',
+        pincode: postcode || '',
+        country: country || '',
+        coordinates: {
+          latitude: lat,
+          longitude: lon
+        }
+      }
+    };
+
+    console.log('Forward geocoding result:', geocodeResult);
+    return geocodeResult;
+
+  } catch (error) {
+    console.error('Forward geocoding error:', error);
+    return {
+      success: false,
+      error: (error as Error).message || 'Failed to get coordinates for address'
+    };
+  }
+}
+
+/**
  * Validate coordinates
  * @param {number} lat - Latitude
  * @param {number} lon - Longitude
