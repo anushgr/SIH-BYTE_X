@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
-from pydantic import confloat
+from pydantic import Field
+from typing import Annotated
 from datetime import date
 import httpx
 import calendar
@@ -9,11 +10,10 @@ router = APIRouter(prefix="/rainfall_api", tags=["Rainfall API"])
 
 def iso(d: date) -> str:
     return d.isoformat()
-
 @router.get("/monthly-rainfall")
 async def monthly_rainfall(
-    latitude: confloat(ge=-90, le=90) = Query(...),
-    longitude: confloat(ge=-180, le=180) = Query(...),
+    latitude: Annotated[float, Field(ge=-90, le=90)] = Query(...),
+    longitude: Annotated[float, Field(ge=-180, le=180)] = Query(...),
 ):
     """
     Get monthly rainfall data for the past year from Open-Meteo API.

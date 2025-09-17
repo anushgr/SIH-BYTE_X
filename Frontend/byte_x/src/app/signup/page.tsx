@@ -11,6 +11,7 @@ export default function SignUp() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
     phone: "",
     password: "",
@@ -47,6 +48,11 @@ export default function SignUp() {
     if (!formData.lastName.trim()) {
       newErrors.lastName = "Last name is required";
     }
+    if (!formData.username.trim()) {
+      newErrors.username = "Username is required";
+    } else if (formData.username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters";
+    }
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -77,20 +83,39 @@ export default function SignUp() {
 
     setIsLoading(true);
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Account created successfully! Please check your email for verification.");
-      // Redirect to login or dashboard
-      window.location.href = "/login";
+      const response = await fetch('http://127.0.0.1:8000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          full_name: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone || null,
+          organization: formData.organization || null
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert("Account created successfully! You can now log in.");
+        // Redirect to login
+        window.location.href = "/login";
+      } else {
+        const errorData = await response.json();
+        setErrors({ general: errorData.detail || "Registration failed. Please try again." });
+      }
     } catch (err) {
-      setErrors({ general: "Registration failed. Please try again." });
+      setErrors({ general: "Network error. Please check if the server is running." });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isFormValid = formData.firstName && formData.lastName && formData.email && 
+  const isFormValid = formData.firstName && formData.lastName && formData.username && formData.email && 
                      formData.password && formData.confirmPassword && formData.acceptTerms;
 
   return (
@@ -173,6 +198,21 @@ export default function SignUp() {
                 />
                 {errors.email && (
                   <p className="text-red-600 text-xs">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="username">Username *</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  placeholder="johndoe123"
+                  className={`h-11 ${errors.username ? 'border-red-500' : ''}`}
+                />
+                {errors.username && (
+                  <p className="text-red-600 text-xs">{errors.username}</p>
                 )}
               </div>
 

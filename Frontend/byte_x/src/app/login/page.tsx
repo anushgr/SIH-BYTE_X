@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function Login() {
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,20 +31,32 @@ export default function Login() {
     setIsLoading(true);
     setError("");
 
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simple validation for demo
-      if (formData.email === "demo@rainharvest.com" && formData.password === "demo123") {
+      const response = await fetch('http://127.0.0.1:8000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.email, // Using email as username for simplicity
+          password: formData.password
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Use the auth context login function
+        await login(data.access_token, data.token_type);
+        
         alert("Login successful! Welcome to RainHarvest.");
         // Redirect to dashboard or assessment page
         window.location.href = "/assessment";
       } else {
-        setError("Invalid email or password. Try demo@rainharvest.com / demo123");
+        const errorData = await response.json();
+        setError(errorData.detail || "Login failed. Please check your credentials.");
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      setError("Network error. Please check if the server is running.");
     } finally {
       setIsLoading(false);
     }
@@ -87,14 +101,14 @@ export default function Login() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Email Address / Username</Label>
                 <Input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
                   value={formData.email}
                   onChange={handleInputChange}
-                  placeholder="Enter your email"
+                  placeholder="Enter your email or username"
                   required
                   className="h-11"
                 />
@@ -154,10 +168,11 @@ export default function Login() {
 
             {/* Demo Credentials */}
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h3 className="font-semibold text-blue-900 mb-2">Demo Account</h3>
+              <h3 className="font-semibold text-blue-900 mb-2">Test Account</h3>
               <div className="text-sm text-blue-700 space-y-1">
-                <p><strong>Email:</strong> demo@rainharvest.com</p>
-                <p><strong>Password:</strong> demo123</p>
+                <p><strong>Username:</strong> testuser</p>
+                <p><strong>Password:</strong> testpass123</p>
+                <p className="text-xs">Create this account first using the signup page, or create your own account</p>
               </div>
             </div>
 

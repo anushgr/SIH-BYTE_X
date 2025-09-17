@@ -4,14 +4,30 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'
 import { Button } from './ui/button'
-import { Droplets } from 'lucide-react'
+import { Droplets, User, LogOut } from 'lucide-react'
 import { LanguageToggle } from './language-toggle'
+import { useAuth } from '@/contexts/auth-context'
+import { Avatar, AvatarFallback } from './ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Header() {
   const pathname = usePathname()
+  const { user, logout, isLoading } = useAuth()
 
   const isActive = (path: string) => {
     return pathname === path
+  }
+
+  const handleLogout = () => {
+    logout()
+    window.location.href = '/'
   }
 
   return (
@@ -67,14 +83,57 @@ export function Header() {
           
           {/* Auth buttons */}
           <nav className="flex items-center gap-2">
-            {pathname !== '/login' && pathname !== '/signup' && (
+            {!isLoading && (
               <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login"><span data-translate="Sign In">Sign In</span></Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/signup"><span data-translate="Sign Up">Sign Up</span></Link>
-                </Button>
+                {user ? (
+                  /* User is logged in - show user menu */
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="flex items-center gap-2 h-auto p-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="text-sm">
+                            {user.full_name 
+                              ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase()
+                              : user.username.charAt(0).toUpperCase()
+                            }
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="hidden sm:inline">
+                          {user.full_name || user.username}
+                        </span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel>
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">
+                            {user.full_name || user.username}
+                          </p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {user.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleLogout}>
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  /* User is not logged in - show login/signup buttons */
+                  pathname !== '/login' && pathname !== '/signup' && (
+                    <>
+                      <Button variant="ghost" size="sm" asChild>
+                        <Link href="/login"><span data-translate="Sign In">Sign In</span></Link>
+                      </Button>
+                      <Button size="sm" asChild>
+                        <Link href="/signup"><span data-translate="Sign Up">Sign Up</span></Link>
+                      </Button>
+                    </>
+                  )
+                )}
               </>
             )}
             

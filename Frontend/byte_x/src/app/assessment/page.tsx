@@ -9,8 +9,11 @@ import { useState, useEffect, useMemo } from "react"
 import { getCurrentLocationWithAddress } from "@/utils/geolocation"
 import type { LocationResult } from "@/types/geolocation"
 import dynamic from "next/dynamic"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function Assessment() {
+  const { user, isLoading: authLoading } = useAuth()
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,6 +42,18 @@ export default function Assessment() {
 
   // Dynamically import the map on client only
   const IndiaMap = useMemo(() => dynamic(() => import("@/components/IndiaMap"), { ssr: false }), [])
+
+  // Auto-fill user information when user data is available
+  useEffect(() => {
+    if (user && !authLoading) {
+      setFormData(prev => ({
+        ...prev,
+        name: user.full_name || prev.name,
+        email: user.email || prev.email,
+        phone: user.phone || prev.phone,
+      }))
+    }
+  }, [user, authLoading])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -124,9 +139,17 @@ export default function Assessment() {
                 <CardTitle className="flex items-center space-x-2 dark:text-white">
                   <span className="text-2xl">👤</span>
                   <span>Personal Information</span>
+                  {user && (
+                    <span className="ml-auto text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
+                      Auto-filled from profile
+                    </span>
+                  )}
                 </CardTitle>
                 <CardDescription className="dark:text-gray-300">
-                  Basic contact information for your assessment report
+                  {user 
+                    ? "Information loaded from your profile. You can modify if needed."
+                    : "Basic contact information for your assessment report"
+                  }
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -138,8 +161,9 @@ export default function Assessment() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Enter your full name"
+                      placeholder={authLoading ? "Loading..." : "Enter your full name"}
                       required
+                      disabled={authLoading}
                     />
                   </div>
                   <div className="space-y-2">
@@ -150,8 +174,9 @@ export default function Assessment() {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="Enter your email"
+                      placeholder={authLoading ? "Loading..." : "Enter your email"}
                       required
+                      disabled={authLoading}
                     />
                   </div>
                   <div className="space-y-2">
@@ -162,7 +187,8 @@ export default function Assessment() {
                       type="tel"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="Enter your phone number"
+                      placeholder={authLoading ? "Loading..." : "Enter your phone number"}
+                      disabled={authLoading}
                     />
                   </div>
                 </div>
@@ -172,10 +198,22 @@ export default function Assessment() {
             {/* Location Information */}
             <Card className="dark:bg-gray-800 dark:border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 dark:text-white">
-                  <span className="text-2xl">📍</span>
-                  <span>Location Details</span>
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">📍</span>
+                    <CardTitle className="dark:text-white">Location Details</CardTitle>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={getLocation}
+                    disabled={isLoading}
+                    variant="default"
+                    size="sm"
+                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  >
+                    {isLoading ? "Getting Location..." : "Get Location automatically"}
+                  </Button>
+                </div>
                 <CardDescription className="dark:text-gray-300">
                   Your property location for local climate and groundwater analysis
                 </CardDescription>
@@ -227,21 +265,8 @@ export default function Assessment() {
                 
                 {/* GPS Location */}
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-blue-900">GPS Coordinates & Address</h3>
-                      <p className="text-sm text-blue-700">Get precise location and auto-fill address details</p>
-                    </div>
-                    <Button
-                      type="button"
-                      onClick={getLocation}
-                      disabled={isLoading}
-                      variant="default"
-                      size="sm"
-                      className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                    >
-                      {isLoading ? "Getting Location..." : "Get Location & Address"}
-                    </Button>
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-blue-900">GPS Coordinates & Address</h3>
                   </div>
                   
                   {location && (

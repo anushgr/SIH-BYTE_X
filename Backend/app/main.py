@@ -1,28 +1,32 @@
 from fastapi import FastAPI
-from app.routers.feasibility import router as feasibility_router
-from app.routers.structure import router as structure_router
-from app.routers.aquifer import router as aquifer_router
-from app.routers.groundwater import router as groundwater_router
-from app.routers.rainfall import router as rainfall_router
-from app.routers.runoff import router as runoff_router
-from app.routers.dimension import router as dimension_router
-from app.routers.email import router as email_router
+from fastapi.middleware.cors import CORSMiddleware
+from .routers.rainfall_api import router as rainfall_router
+from .routers.auth_api import router as auth_router
+from .database import engine
+from .models import Base
 
-from app.routers.cost import router as cost_router
-from app.routers.groundwater_api import router as groundwater_api_router
-from app.routers.rainfall_api import router as rainfall_api_router
+# Create database tables
+Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="SIH BYTE_X Backend")
+app = FastAPI(title="SIH BYTE_X Backend", description="A fresh start for the SIH project backend", version="1.0.0")
 
-app.include_router(feasibility_router)
-app.include_router(structure_router)
-app.include_router(aquifer_router)
-app.include_router(groundwater_router)
+# Add CORS middleware for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Add your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
 app.include_router(rainfall_router)
-app.include_router(runoff_router)
-app.include_router(dimension_router)
+app.include_router(auth_router)
 
-app.include_router(cost_router)
-app.include_router(groundwater_api_router)
-app.include_router(rainfall_api_router)
-app.include_router(email_router)
+@app.get("/")
+async def root():
+    return {"message": "Welcome to SIH BYTE_X Backend API", "status": "running"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "message": "Backend is running successfully"}
