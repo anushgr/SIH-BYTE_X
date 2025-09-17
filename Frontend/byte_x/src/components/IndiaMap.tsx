@@ -165,7 +165,7 @@ export default function IndiaMap({ userLocation, stations, onLocationChange }: P
   }, [userLocation, allStations, nearest])
 
   return (
-    <div className="w-full rounded-lg overflow-hidden border border-blue-200 relative" style={{ height: 320 }}>
+    <div className="w-full rounded-lg overflow-hidden border border-blue-200 relative z-0" style={{ height: 320 }}>
       <div ref={containerRef} style={{ height: "100%", width: "100%" }} />
       {nearest && (
         <div className="absolute bottom-2 left-2 right-2 md:left-3 md:right-auto bg-white/90 backdrop-blur rounded-md px-2 py-1 text-xs shadow border">

@@ -31,7 +31,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60 shadow-lg">
+    <header className="sticky top-0 z-[1000] w-full border-b border-white/10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60 shadow-lg">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         {/* Logo and Brand */}
         <div className="mr-6 hidden md:flex">
@@ -71,6 +71,16 @@ export function Header() {
             {isActive('/') && (
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
             )}
+          </Link>
+          <Link
+            href="/info"
+            className={`transition-colors hover:text-foreground/80 ${
+              isActive('/info') 
+                ? 'text-foreground font-medium' 
+                : 'text-foreground/60'
+            }`}
+          >
+            <span data-translate="Info">Info</span>
           </Link>
           <Link
             href="/assessment"
