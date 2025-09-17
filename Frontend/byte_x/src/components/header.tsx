@@ -73,6 +73,16 @@ export function Header() {
             )}
           </Link>
           <Link
+            href="/info"
+            className={`transition-colors hover:text-foreground/80 ${
+              isActive('/info') 
+                ? 'text-foreground font-medium' 
+                : 'text-foreground/60'
+            }`}
+          >
+            <span data-translate="Info">Info</span>
+          </Link>
+          <Link
             href="/assessment"
             className={`relative px-4 py-2 rounded-full transition-all duration-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
               isActive('/assessment') 
