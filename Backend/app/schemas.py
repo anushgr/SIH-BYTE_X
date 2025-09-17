@@ -30,3 +30,32 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: Optional[str] = None
+
+class AssessmentBase(BaseModel):
+    name: str
+    email: EmailStr
+    phone: Optional[str] = None
+    address: str
+    city: Optional[str] = None
+    state: Optional[str] = None
+    pincode: Optional[str] = None
+    dwellers: int
+    roof_area: float
+    roof_type: Optional[str] = None
+    open_space: Optional[float] = None
+    current_water_source: Optional[str] = None
+    monthly_water_bill: Optional[float] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    accuracy: Optional[float] = None
+
+class AssessmentCreate(AssessmentBase):
+    pass
+
+class AssessmentResponse(AssessmentBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
