@@ -587,7 +587,7 @@ export default function Assessment() {
               <Button
                 type="submit"
                 size="lg"
-                className="px-12 py-3 text-lg"
+                className="px-12 py-3 text-lg rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
                 disabled={!isFormValid()}
               >
                 {isSubmitting ? "Generating Report..." : "Generate Assessment Report"}
