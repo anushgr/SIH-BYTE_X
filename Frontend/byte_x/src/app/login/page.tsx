@@ -49,7 +49,7 @@ export default function Login() {
         // Use the auth context login function
         await login(data.access_token, data.token_type);
         
-        alert("Login successful! Welcome to RainHarvest.");
+        alert("Login successful! Welcome to Jalsanchay.");
         // Redirect to dashboard or assessment page
         window.location.href = "/assessment";
       } else {
@@ -84,9 +84,9 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <div className="w-12 h-12 bg-blue-600 dark:bg-blue-500 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-lg">RH</span>
+              <span className="text-white font-bold text-lg">JS</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">RainHarvest</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">Jalsanchay</span>
           </Link>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
           <p className="text-gray-600 dark:text-gray-300">Sign in to your account to continue your assessment</p>

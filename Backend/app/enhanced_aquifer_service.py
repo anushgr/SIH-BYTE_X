@@ -225,26 +225,27 @@ class EnhancedAquiferService:
         """
         Transform raw aquifer data into user-friendly format
         """
-        # Get basic information
-        name = raw_aquifer.get('NAME', 'Unknown Aquifer')
-        aquifer_type = raw_aquifer.get('TYPE', 'Unknown')
-        state = raw_aquifer.get('STATE', 'Unknown')
+        # Get basic information - using actual column names from GeoJSON
+        name = raw_aquifer.get('aquifer', 'Unknown Aquifer')
+        aquifer_type = raw_aquifer.get('system', 'Unknown')  # 'Single' system type
+        state = raw_aquifer.get('state', 'Unknown')
         
-        # Categorize technical data
-        depth_info = self._categorize_depth(raw_aquifer.get('DEPTH_RANGE', ''))
-        yield_info = self._categorize_yield(raw_aquifer.get('YIELD_RANGE', ''))
-        perm_info = self._categorize_permeability(raw_aquifer.get('PERMEABILITY', ''))
+        # Categorize technical data - using actual column names
+        depth_info = self._categorize_depth(raw_aquifer.get('avg_mbgl', ''))
+        yield_info = self._categorize_yield(raw_aquifer.get('m3_per_day', ''))
+        perm_info = self._categorize_permeability(raw_aquifer.get('per_cm', ''))
         
         # Get suitability assessment
         suitability = self._get_suitability_assessment(raw_aquifer)
         
-        # Determine water storage type
+        # Determine water storage type - using 'aquifers' column
         storage_type = "Unknown"
-        if 'unconfined' in str(raw_aquifer.get('CONFINEMENT', '')).lower():
+        confinement = str(raw_aquifer.get('aquifers', '')).lower()
+        if 'unconfined' in confinement:
             storage_type = "Mostly unconfined (water table varies with rainfall)"
-        elif 'confined' in str(raw_aquifer.get('CONFINEMENT', '')).lower():
+        elif 'confined' in confinement and 'unconfined' not in confinement:
             storage_type = "Confined (pressurized water, more stable)"
-        elif 'semi' in str(raw_aquifer.get('CONFINEMENT', '')).lower():
+        elif 'semi' in confinement or ('confined' in confinement and 'unconfined' in confinement):
             storage_type = "Semi-confined (partially protected water)"
         
         # Create enhanced data structure
@@ -259,18 +260,18 @@ class EnhancedAquiferService:
                 "depth": {
                     "category": depth_info['category'],
                     "description": depth_info['description'],
-                    "raw_data": raw_aquifer.get('DEPTH_RANGE', 'Unknown')
+                    "raw_data": raw_aquifer.get('avg_mbgl', 'Unknown')
                 },
                 "yield": {
                     "category": yield_info['category'],
                     "description": yield_info['description'],
                     "household_equivalent": yield_info.get('household_equivalent', 'Unknown'),
-                    "raw_data": raw_aquifer.get('YIELD_RANGE', 'Unknown')
+                    "raw_data": raw_aquifer.get('m3_per_day', 'Unknown')
                 },
                 "permeability": {
                     "category": perm_info['category'],
                     "description": perm_info['description'],
-                    "raw_data": raw_aquifer.get('PERMEABILITY', 'Unknown')
+                    "raw_data": raw_aquifer.get('per_cm', 'Unknown')
                 }
             },
             "rwh_suitability": {
@@ -284,10 +285,10 @@ class EnhancedAquiferService:
                 "maintenance": "Regular monitoring recommended for sustainable use"
             },
             "technical_details": {
-                "transmissivity": raw_aquifer.get('TRANSMISSIVITY', 'Unknown'),
-                "storage_coefficient": raw_aquifer.get('STORAGE_COEFF', 'Unknown'),
-                "hydraulic_conductivity": raw_aquifer.get('HYDRAULIC_COND', 'Unknown'),
-                "porosity": raw_aquifer.get('POROSITY', 'Unknown')
+                "transmissivity": raw_aquifer.get('m2_perday', 'Unknown'),
+                "storage_coefficient": raw_aquifer.get('yeild__', 'Unknown'),
+                "hydraulic_conductivity": raw_aquifer.get('m2_perday', 'Unknown'),
+                "porosity": raw_aquifer.get('zone_m', 'Unknown')
             }
         }
         

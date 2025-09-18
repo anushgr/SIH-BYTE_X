@@ -1,0 +1,458 @@
+{
+  "message": "Assessment completed successfully",
+  "assessment_data": {
+    "name": "Test User",
+    "email": "test@example.com",
+    "address": "123 Test Street",
+    "city": "Bangalore",
+    "state": "Karnataka",
+    "roof_area": 100.0,
+    "roof_type": "RCC",
+    "dwellers": 4
+  },
+  "preliminary_results": {
+    "estimated_annual_collection_liters": 5464.0,
+    "potential_monthly_savings_inr": 450.0,
+    "feasibility_score": "Good",
+    "annual_rainfall_used_mm": 1206.4,
+    "cost_benefit_summary": {
+      "estimated_system_cost": 0,
+      "annual_savings": 0,
+      "payback_years": "Not calculated"
+    },
+    "financial_highlights": {
+      "total_system_cost": 0,
+      "annual_savings": 0,
+      "payback_years": "N/A",
+      "roi_20_years": 0,
+      "investment_rating": "not_calculated"
+    },
+    "next_steps": [
+      "Detailed site survey required",
+      "Local rainfall data analysis",
+      "System design and costing",
+      "Government subsidy eligibility check"
+    ]
+  },
+  "runoff_analysis": {
+    "roof_details": {
+      "area_sqft": 100.0,
+      "area_sqm": 9.29,
+      "material": "RCC",
+      "runoff_coefficient": 0.75,
+      "collection_efficiency": 0.65,
+      "quality_rating": "variable"
+    },
+    "annual_summary": {
+      "total_rainfall_mm": 1206.4,
+      "total_runoff_liters": 5464.0,
+      "average_monthly_runoff_liters": 455.0
+    },
+    "runoff_calculations": {
+      "annual_rainfall_mm": 1206.4,
+      "gross_annual_runoff_liters": 8406.0,
+      "net_annual_collectible_liters": 5464.0,
+      "average_monthly_collectible_liters": 455.0,
+      "collection_efficiency_percent": 65.0
+    },
+    "water_demand_analysis": {
+      "daily_demand_per_person_liters": 135,
+      "total_daily_demand_liters": 540,
+      "annual_demand_liters": 197100,
+      "demand_fulfillment_percentage": 2.8
+    },
+    "monthly_breakdown": [
+      {
+        "month": 1,
+        "rainfall_mm": 7.7,
+        "runoff_liters": 35.0
+      },
+      {
+        "month": 2,
+        "rainfall_mm": 0.0,
+        "runoff_liters": 0.0
+      },
+      {
+        "month": 3,
+        "rainfall_mm": 0.0,
+        "runoff_liters": 0.0
+      },
+      {
+        "month": 4,
+        "rainfall_mm": 0.1,
+        "runoff_liters": 0.0
+      },
+      {
+        "month": 5,
+        "rainfall_mm": 161.8,
+        "runoff_liters": 733.0
+      },
+      {
+        "month": 6,
+        "rainfall_mm": 135.4,
+        "runoff_liters": 613.0
+      },
+      {
+        "month": 7,
+        "rainfall_mm": 209.1,
+        "runoff_liters": 947.0
+      },
+      {
+        "month": 8,
+        "rainfall_mm": 227.0,
+        "runoff_liters": 1028.0
+      },
+      {
+        "month": 9,
+        "rainfall_mm": 74.6,
+        "runoff_liters": 338.0
+      },
+      {
+        "month": 10,
+        "rainfall_mm": 268.2,
+        "runoff_liters": 1215.0
+      },
+      {
+        "month": 11,
+        "rainfall_mm": 36.6,
+        "runoff_liters": 166.0
+      },
+      {
+        "month": 12,
+        "rainfall_mm": 85.9,
+        "runoff_liters": 389.0
+      }
+    ],
+    "system_recommendations": {
+      "first_flush_diverter_liters": 9.0,
+      "recommended_storage_tank_liters": 911.0,
+      "daily_average_collection_liters": 15.0
+    }
+  },
+  "feasibility_assessment": {
+    "overall_feasibility": {
+      "total_score": 75.0,
+      "rating": "Good",
+      "recommendation": "Recommended for implementation with standard monitoring",
+      "priority": "medium",
+      "confidence_level": "medium"
+    },
+    "factor_scores": {
+      "rainfall_adequacy": {
+        "score": 80,
+        "weight": 25,
+        "weighted_score": 20.0
+      },
+      "soil_suitability": {
+        "score": 70,
+        "weight": 20,
+        "weighted_score": 14.0
+      },
+      "groundwater_conditions": {
+        "score": 75,
+        "weight": 20,
+        "weighted_score": 15.0
+      },
+      "technical_viability": {
+        "score": 85,
+        "weight": 20,
+        "weighted_score": 17.0
+      },
+      "economic_viability": {
+        "score": 65,
+        "weight": 15,
+        "weighted_score": 9.75
+      }
+    },
+    "implementation_strategy": {
+      "primary_focus": "recharge",
+      "system_complexity": "moderate",
+      "monitoring_requirements": "standard"
+    },
+    "recommendations": [
+      "Proceed with rainwater harvesting implementation",
+      "Regular monitoring and maintenance recommended",
+      "Consider local soil conditions for optimal design"
+    ],
+    "limiting_factors": [],
+    "detailed_analysis": {
+      "rainfall_analysis": {
+        "annual_rainfall_mm": 1206.4,
+        "adequacy_level": "good",
+        "seasonal_distribution": "moderate",
+        "reliability_score": 75.0
+      },
+      "soil_analysis": {
+        "soil_type": "Mixed",
+        "infiltration_capacity": "moderate",
+        "recharge_potential": "good",
+        "structural_suitability": "good"
+      },
+      "groundwater_analysis": {
+        "depth_category": "moderate",
+        "seasonal_variation": "moderate",
+        "recharge_need": "moderate",
+        "station_distance": "moderate"
+      },
+      "technical_analysis": {
+        "roof_area_adequacy": "good",
+        "roof_material_quality": "good",
+        "collection_efficiency_percent": 80.0,
+        "demand_fulfillment_percent": 45.0,
+        "demand_adequacy": "moderate",
+        "potential_annual_collection_liters": 5464.0,
+        "annual_water_demand_liters": 197100
+      },
+      "economic_analysis": {
+        "estimated_system_cost_inr": 75000,
+        "estimated_annual_savings_inr": 18000,
+        "payback_period_years": 4.2,
+        "payback_category": "good",
+        "investment_attractiveness": "moderate"
+      }
+    }
+  },
+  "structure_recommendations": {
+    "error": "Structure recommendation error: float division by zero",
+    "message": "Structure recommendations not available"
+  },
+  "cost_benefit_analysis": null,
+  "soil_analysis": {
+    "soil_type": "1. Fine texture",
+    "soil_class": "Loamy clay,Clay,sandy clay, silty clay, sandy clay",
+    "soil_code": 1,
+    "suitability": "Excellent",
+    "suitability_score": 9,
+    "infiltration_rate": "Low (0.1-1.0 cm/hr)",
+    "recommendations": [
+      "Excellent for rainwater storage tanks",
+      "Low permeability reduces water loss",
+      "Ideal for lined ponds and reservoirs",
+      "Consider overflow management systems"
+    ]
+  },
+  "rainfall_analysis": {
+    "annual_rainfall_mm": 1206.4,
+    "average_monthly_mm": 100.53,
+    "wettest_month": {
+      "name": "October",
+      "rainfall_mm": 268.2
+    },
+    "driest_month": {
+      "name": "February",
+      "rainfall_mm": 0.0
+    },
+    "year": 2024,
+    "monthly_data": [
+      {
+        "year": 2024,
+        "month": 1,
+        "month_name": "January",
+        "monthly_rain_mm": 7.7
+      },
+      {
+        "year": 2024,
+        "month": 2,
+        "month_name": "February",
+        "monthly_rain_mm": 0.0
+      },
+      {
+        "year": 2024,
+        "month": 3,
+        "month_name": "March",
+        "monthly_rain_mm": 0.0
+      },
+      {
+        "year": 2024,
+        "month": 4,
+        "month_name": "April",
+        "monthly_rain_mm": 0.1
+      },
+      {
+        "year": 2024,
+        "month": 5,
+        "month_name": "May",
+        "monthly_rain_mm": 161.8
+      },
+      {
+        "year": 2024,
+        "month": 6,
+        "month_name": "June",
+        "monthly_rain_mm": 135.4
+      },
+      {
+        "year": 2024,
+        "month": 7,
+        "month_name": "July",
+        "monthly_rain_mm": 209.1
+      },
+      {
+        "year": 2024,
+        "month": 8,
+        "month_name": "August",
+        "monthly_rain_mm": 227.0
+      },
+      {
+        "year": 2024,
+        "month": 9,
+        "month_name": "September",
+        "monthly_rain_mm": 74.6
+      },
+      {
+        "year": 2024,
+        "month": 10,
+        "month_name": "October",
+        "monthly_rain_mm": 268.2
+      },
+      {
+        "year": 2024,
+        "month": 11,
+        "month_name": "November",
+        "monthly_rain_mm": 36.6
+      },
+      {
+        "year": 2024,
+        "month": 12,
+        "month_name": "December",
+        "monthly_rain_mm": 85.9
+      }
+    ]
+  },
+  "aquifer_analysis": {
+    "aquifers": [
+      {
+        "basic_info": {
+          "name": "Basement Gneissic Complex",
+          "type": "Single",
+          "location": "Found in KA",
+          "water_storage": "Mostly unconfined (water table varies with rainfall)"
+        },
+        "water_characteristics": {
+          "depth": {
+            "category": "Shallow",
+            "description": "5-20 meters - Easy to access with regular borewells",
+            "raw_data": "5-20"
+          },
+          "yield": {
+            "category": "High",
+            "description": "100 - 400 m\u00b3/day - Suitable for towns and irrigation",
+            "household_equivalent": "Can supply ~125 households",
+            "raw_data": "100 - 400"
+          },
+          "permeability": {
+            "category": "Variable",
+            "description": "Water flow depends on local rock conditions",
+            "raw_data": "500-5500"
+          }
+        },
+        "rwh_suitability": {
+          "level": "Limited",
+          "description": "Limited potential due to geological constraints",
+          "recommendation": "Focus on surface storage rather than recharge"
+        },
+        "seasonal_notes": {
+          "recharge": "Depends on monsoon rainfall for recharge",
+          "reliability": "Water levels may fall during summer months",
+          "maintenance": "Regular monitoring recommended for sustainable use"
+        },
+        "technical_details": {
+          "transmissivity": "2-176",
+          "storage_coefficient": "Upto 2%",
+          "hydraulic_conductivity": "2-176",
+          "porosity": "Up to 60"
+        }
+      }
+    ],
+    "count": 1,
+    "location": {
+      "latitude": 12.917727,
+      "longitude": 77.513259
+    },
+    "summary": {
+      "total_aquifers": 1,
+      "primary_aquifer": "Basement Gneissic Complex",
+      "overall_suitability": "Limited"
+    },
+    "user_friendly": true
+  },
+  "groundwater_analysis": {
+    "nearest_station": {
+      "station_name": "Rajarajeshwari Nagara Pattanagere",
+      "station_code": "010316",
+      "longitude": 77.52,
+      "latitude": 12.92,
+      "distance_km": 0.77
+    },
+    "data_availability": {
+      "2024_data": true
+    },
+    "groundwater_analysis": {
+      "period": "2024-01 to 2025-01",
+      "annual_summary": [
+        [
+          "Rajarajeshwari Nagara Pattanagere",
+          "010316",
+          "Karnataka",
+          "Bangalore Urban",
+          "Cauvery Basin",
+          "Cauvery Middle",
+          17.76,
+          13.54,
+          17.99
+        ]
+      ],
+      "monthly_data": [
+        [
+          2024.0,
+          1.0,
+          17.6,
+          17.56,
+          17.68,
+          14
+        ],
+        [
+          2024.0,
+          2.0,
+          17.57,
+          13.54,
+          17.85,
+          24
+        ],
+        [
+          2024.0,
+          3.0,
+          17.83,
+          17.79,
+          17.88,
+          28
+        ],
+        [
+          2024.0,
+          4.0,
+          17.94,
+          17.89,
+          17.99,
+          26
+        ],
+        [
+          2024.0,
+          5.0,
+          17.77,
+          17.58,
+          17.99,
+          23
+        ]
+      ]
+    },
+    "input_coordinates": {
+      "latitude": 12.917727,
+      "longitude": 77.513259
+    }
+  },
+  "location": {
+    "latitude": 12.917727,
+    "longitude": 77.513259,
+    "accuracy": null
+  },
+  "status": "success"
+}

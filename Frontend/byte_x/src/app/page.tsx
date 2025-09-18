@@ -265,9 +265,9 @@ export default function Home() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">RH</span>
+                  <span className="text-white font-bold text-sm">JS</span>
                 </div>
-                <span className="text-xl font-bold">RainHarvest</span>
+                <span className="text-xl font-bold">Jalsanchay</span>
               </div>
               <p className="text-gray-400 dark:text-gray-300">
                 Empowering communities through sustainable water management and groundwater conservation.
@@ -293,7 +293,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-8 text-center text-gray-400 dark:text-gray-300">
-            <p>&copy; 2025 RainHarvest Platform. A Central Ground Water Board Initiative.</p>
+            <p>&copy; 2025 Jalsanchay . A Central Ground Water Board Initiative.</p>
           </div>
         </div>
       </footer>

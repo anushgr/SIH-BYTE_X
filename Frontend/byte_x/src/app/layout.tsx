@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Header } from '@/components/header'
 import { I18nClient } from '@/components/i18n-client'
 import { AuthProvider } from '@/contexts/auth-context'
+import { Chatbot } from '@/components/chatbot'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -17,8 +18,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'RTRWH Assessment Platform',
-  description: 'Rooftop Rainwater Harvesting Assessment and Guidance Platform',
+  title: 'Jalsanchay - Rainwater Harvesting Platform',
+  description: 'Jalsanchay - Rooftop Rainwater Harvesting Assessment and Guidance Platform',
 }
 
 export default function RootLayout({
@@ -38,6 +39,7 @@ export default function RootLayout({
             <main>
               {children}
             </main>
+            <Chatbot />
           </ThemeProvider>
         </AuthProvider>
       </body>

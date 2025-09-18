@@ -87,7 +87,24 @@ export default function IndiaMap({ userLocation, stations, onLocationChange }: P
       })
       userMarkerRef.current = m
       layer.addLayer(m)
-      map.setView([userLocation.latitude, userLocation.longitude], 8)
+      
+      // Calculate appropriate zoom and center to show both user and nearest station
+      if (nearest) {
+        // Create bounds that include both points
+        const bounds = L.latLngBounds([
+          [userLocation.latitude, userLocation.longitude],
+          [nearest.st.latitude, nearest.st.longitude]
+        ])
+        
+        // Add padding and fit bounds with a maximum zoom level
+        map.fitBounds(bounds, {
+          padding: [50, 50], // Add 50px padding on all sides
+          maxZoom: 12 // Don't zoom in too much for very close stations
+        })
+      } else {
+        // If no nearest station, just center on user with a reasonable zoom
+        map.setView([userLocation.latitude, userLocation.longitude], 10)
+      }
     } else {
       map.setView([22.9734, 78.6569], 4.5)
     }

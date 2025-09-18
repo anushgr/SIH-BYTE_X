@@ -38,6 +38,15 @@ export default function Assessment() {
     longitude: number;
     accuracy: number;
   } | null>(null);
+  const [nearestStation, setNearestStation] = useState<{
+    id: string;
+    name: string;
+    latitude: number;
+    longitude: number;
+    distance: number;
+    state: string;
+    district?: string;
+  } | null>(null);
   const [locationError, setLocationError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGeocodingLoading, setIsGeocodingLoading] = useState(false);
@@ -68,10 +77,40 @@ export default function Assessment() {
     }));
   };
 
+  const fetchNearestStation = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/groundwater/nearest-station?latitude=${latitude}&longitude=${longitude}`);
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.nearest_station) {
+        setNearestStation({
+          id: data.nearest_station.id || data.nearest_station.station_id || data.nearest_station.station_code || 'unknown',
+          name: data.nearest_station.name || data.nearest_station.station_name || 'Unknown Station',
+          latitude: data.nearest_station.latitude,
+          longitude: data.nearest_station.longitude,
+          distance: data.nearest_station.distance || data.nearest_station.distance_km || 0,
+          state: data.nearest_station.state || 'Unknown',
+          district: data.nearest_station.district
+        });
+        
+        console.log("Nearest station found:", data.nearest_station);
+      }
+    } catch (error) {
+      console.error("Error fetching nearest station:", error);
+      // Don't show error to user as this is a secondary feature
+    }
+  };
+
   const getLocation = async () => {
     setIsLoading(true);
     setLocationError("");
     setGeocodingStatus("");
+    setNearestStation(null); // Reset station data
     
     try {
       const result = await getCurrentLocationWithAddress();
@@ -82,6 +121,9 @@ export default function Assessment() {
         longitude: result.coordinates.longitude,
         accuracy: result.coordinates.accuracy,
       });
+      
+      // Fetch nearest groundwater station
+      await fetchNearestStation(result.coordinates.latitude, result.coordinates.longitude);
       
       // Handle reverse geocoding result
       if (result.geocoding.success && result.geocoding.data) {
@@ -134,6 +176,7 @@ export default function Assessment() {
     setIsGeocodingLoading(true);
     setLocationError("");
     setGeocodingStatus("Getting coordinates for your address...");
+    setNearestStation(null); // Reset station data
 
     try {
       const result = await forwardGeocode(fullAddress);
@@ -144,6 +187,9 @@ export default function Assessment() {
           longitude: result.data.coordinates.longitude,
           accuracy: 0, // Manual geocoding doesn't provide accuracy
         });
+        
+        // Fetch nearest groundwater station
+        await fetchNearestStation(result.data.coordinates.latitude, result.data.coordinates.longitude);
         
         // Update form fields with more accurate data from geocoding
         setFormData(prev => ({
@@ -460,6 +506,20 @@ export default function Assessment() {
                     </div>
                   )}
                   
+                  {nearestStation && (
+                    <div className="bg-blue-50 p-3 rounded border border-blue-200 mb-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-blue-600">🎯</span>
+                        <span className="text-blue-800 font-medium">Nearest Groundwater Station</span>
+                      </div>
+                      <div className="text-sm text-blue-700">
+                        <div><strong>{nearestStation.name}</strong></div>
+                        <div>Distance: ~{nearestStation.distance.toFixed(1)} km away</div>
+    
+                      </div>
+                    </div>
+                  )}
+                  
                   {locationError && (
                     <div className="bg-red-50 p-3 rounded border border-red-200">
                       <span className="text-red-700">✗ {locationError}</span>
@@ -467,16 +527,24 @@ export default function Assessment() {
                   )}
                   
                   <div className="text-xs text-blue-600 mt-2">
-                    Your coordinates help us fetch local rainfall data and groundwater information for accurate assessment.
+                    Your coordinates help us fetch local rainfall data and groundwater information for accurate assessment. We also locate the nearest groundwater monitoring station for reference.
                   </div>
 
                   {/* Map showing user and stations */}
                   <div className="mt-4">
                     <IndiaMap
                       userLocation={location ? { latitude: location.latitude, longitude: location.longitude } : null}
-                      onLocationChange={(lat, lng) => {
+                      stations={nearestStation ? [{
+                        id: nearestStation.id,
+                        name: nearestStation.name,
+                        latitude: nearestStation.latitude,
+                        longitude: nearestStation.longitude
+                      }] : []}
+                      onLocationChange={async (lat, lng) => {
                         setLocation({ latitude: lat, longitude: lng, accuracy: 0 })
                         setGeocodingStatus("")
+                        setNearestStation(null) // Reset station data
+                        await fetchNearestStation(lat, lng) // Fetch new nearest station
                       }}
                     />
                   </div>
@@ -619,9 +687,9 @@ export default function Assessment() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">RH</span>
+              <span className="text-white font-bold text-sm">JS</span>
             </div>
-            <span className="text-xl font-bold">RainHarvest</span>
+            <span className="text-xl font-bold">Jalsanchay</span>
           </div>
           <p className="text-gray-400 dark:text-gray-300">
             A Central Ground Water Board Initiative for Sustainable Water Management

@@ -40,8 +40,8 @@ export function Header() {
               <Droplets className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12" />
               <div className="absolute inset-0 bg-blue-600/20 dark:bg-blue-400/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <span className="hidden font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent sm:inline-block" data-translate="RTRWH Platform">
-              RTRWH Platform
+            <span className="hidden font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent sm:inline-block" data-translate="Jalsanchay Platform">
+              Jalsanchay
             </span>
           </Link>
         </div>
@@ -53,7 +53,7 @@ export function Header() {
               <Droplets className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-all duration-300 group-hover:scale-110" />
               <div className="absolute inset-0 bg-blue-600/20 dark:bg-blue-400/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent" data-translate="RTRWH">RTRWH</span>
+            <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent" data-translate="Jalsanchay">Jalsanchay</span>
           </Link>
         </div>
 
