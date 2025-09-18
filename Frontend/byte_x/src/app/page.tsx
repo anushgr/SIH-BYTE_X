@@ -29,8 +29,8 @@ export default function Home() {
               <Button size="lg" asChild className="text-lg px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
                 <Link href="/assessment">Check Your Potential</Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 transition-all duration-300">
-                Learn More
+              <Button size="lg" variant="outline" asChild className="text-lg px-8 py-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 transition-all duration-300">
+                <Link href="/info">Learn More</Link>
               </Button>
             </div>
           </div>
