@@ -11,6 +11,7 @@ import type { LocationResult } from "@/types/geolocation"
 import dynamic from "next/dynamic"
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 export default function Assessment() {
   const { user, isLoading: authLoading } = useAuth()
@@ -233,7 +234,14 @@ export default function Assessment() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 dark:from-gray-900 dark:via-blue-900 dark:to-green-900">
+    <>
+      <LoadingSpinner 
+        isLoading={isSubmitting} 
+        message="Processing your assessment..." 
+        overlay={true}
+        colors={["#3b82f6", "#06b6d4", "#10b981", "#8b5cf6"]}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 dark:from-gray-900 dark:via-blue-900 dark:to-green-900">
       {/* Header */}
       <section className="pt-8 pb-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
@@ -584,7 +592,16 @@ export default function Assessment() {
                 className="px-12 py-3 text-lg rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
                 disabled={!isFormValid()}
               >
-                {isSubmitting ? "Generating Report..." : "Generate Assessment Report"}
+                {isSubmitting ? (
+                  <LoadingSpinner 
+                    isLoading={true} 
+                    message="Generating Report..." 
+                    size="small"
+                    colors={["#ffffff", "#e0f2fe", "#bae6fd", "#7dd3fc"]}
+                  />
+                ) : (
+                  "Generate Assessment Report"
+                )}
               </Button>
             </div>
             
@@ -612,5 +629,6 @@ export default function Assessment() {
         </div>
       </footer>
     </div>
+    </>
   )
 }

@@ -28,20 +28,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Check for existing token on mount
+  // Check for existing token and user data on mount
   useEffect(() => {
+    // Ensure we're on the client side
+    if (typeof window === 'undefined') {
+      setIsLoading(false)
+      return
+    }
+
     const savedToken = localStorage.getItem('token')
     const savedTokenType = localStorage.getItem('tokenType')
+    const savedUser = localStorage.getItem('user')
     
     if (savedToken && savedTokenType) {
       setToken(savedToken)
-      fetchUserInfo(savedToken)
+      
+      // If we have saved user data, load it immediately to avoid empty state
+      if (savedUser) {
+        try {
+          const userData = JSON.parse(savedUser)
+          setUser(userData)
+          setIsLoading(false)
+          
+          // Still fetch fresh user info in the background to ensure data is up-to-date
+          fetchUserInfo(savedToken, false)
+        } catch (error) {
+          console.error('Failed to parse saved user data:', error)
+          localStorage.removeItem('user')
+          fetchUserInfo(savedToken)
+        }
+      } else {
+        fetchUserInfo(savedToken)
+      }
     } else {
       setIsLoading(false)
     }
   }, [])
 
-  const fetchUserInfo = async (authToken: string) => {
+  const fetchUserInfo = async (authToken: string, setLoadingState: boolean = true) => {
+    if (setLoadingState) {
+      setIsLoading(true)
+    }
+    
     try {
       const response = await fetch('http://127.0.0.1:8000/auth/me', {
         headers: {
@@ -52,33 +80,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const userData = await response.json()
         setUser(userData)
+        // Store user data in localStorage for persistence
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(userData))
+        }
       } else {
         // Token is invalid, clear it
-        localStorage.removeItem('token')
-        localStorage.removeItem('tokenType')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token')
+          localStorage.removeItem('tokenType')
+          localStorage.removeItem('user')
+        }
         setToken(null)
+        setUser(null)
       }
     } catch (error) {
       console.error('Failed to fetch user info:', error)
-      // Clear invalid token
-      localStorage.removeItem('token')
-      localStorage.removeItem('tokenType')
-      setToken(null)
+      // Only clear token on network errors if we don't have cached user data
+      if (setLoadingState && typeof window !== 'undefined') {
+        localStorage.removeItem('token')
+        localStorage.removeItem('tokenType')
+        localStorage.removeItem('user')
+        setToken(null)
+        setUser(null)
+      }
     } finally {
-      setIsLoading(false)
+      if (setLoadingState) {
+        setIsLoading(false)
+      }
     }
   }
 
   const login = async (newToken: string, tokenType: string) => {
-    localStorage.setItem('token', newToken)
-    localStorage.setItem('tokenType', tokenType)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('token', newToken)
+      localStorage.setItem('tokenType', tokenType)
+    }
     setToken(newToken)
     await fetchUserInfo(newToken)
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('tokenType')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token')
+      localStorage.removeItem('tokenType')
+      localStorage.removeItem('user')
+    }
     setToken(null)
     setUser(null)
   }

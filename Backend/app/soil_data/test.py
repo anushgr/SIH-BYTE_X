@@ -43,7 +43,7 @@ def get_soil_type(lat, lon):
 
 if __name__ == "__main__":
     # Example point: New Delhi
-    lat, lon = 28.61, 77.20
+    lat, lon = 12.917727, 77.513259
 
     soil_info = get_soil_type(lat, lon)
     print("Soil at location (lat=%.4f, lon=%.4f):" % (lat, lon))

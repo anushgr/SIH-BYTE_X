@@ -57,6 +57,39 @@ interface RainfallAnalysis {
   message?: string;
 }
 
+interface AquiferAnalysis {
+  aquifers?: Array<{
+    GmlID?: string;
+    objectid?: number;
+    newcode14?: string;
+    aquifer?: string;
+    newcode43?: string;
+    aquifer0?: string;
+    system?: string;
+    aquifers?: string;
+    zone_m?: string;
+    mbgl?: string;
+    avg_mbgl?: string;
+    m2_perday?: string;
+    m3_per_day?: string;
+    yeild__?: string;
+    per_cm?: string;
+    state?: string;
+    pa_order?: number;
+    test?: string;
+    area_re?: number;
+    st_area_shape_?: number;
+    st_length_shape_?: number;
+  }>;
+  count?: number;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  error?: string;
+  message?: string;
+}
+
 interface AssessmentResult {
   message: string;
   assessment_data: AssessmentData;
@@ -69,6 +102,7 @@ interface AssessmentResult {
   };
   soil_analysis?: SoilAnalysis;
   rainfall_analysis?: RainfallAnalysis;
+  aquifer_analysis?: AquiferAnalysis;
   location?: {
     latitude: number;
     longitude: number;
@@ -524,6 +558,123 @@ function ReportContent() {
                         </div>
                       )}
                     </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Aquifer Analysis */}
+            {assessmentResult?.aquifer_analysis && (
+              <Card className="dark:bg-gray-800 dark:border-gray-700">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center space-x-2 text-lg dark:text-white">
+                    <span>Aquifer Analysis</span>
+                  </CardTitle>
+                  <CardDescription className="dark:text-gray-400">
+                    Underground water source information for your location
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {assessmentResult.aquifer_analysis.error ? (
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border dark:border-yellow-800/30">
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                        <strong>Note:</strong> {assessmentResult.aquifer_analysis.error}
+                      </p>
+                      {assessmentResult.aquifer_analysis.message && (
+                        <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                          {assessmentResult.aquifer_analysis.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : assessmentResult.aquifer_analysis.aquifers && assessmentResult.aquifer_analysis.aquifers.length > 0 ? (
+                    <>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border dark:border-blue-800/30">
+                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                          {assessmentResult.aquifer_analysis.count} Aquifer(s) Found
+                        </h4>
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                          Underground water sources identified at your location
+                        </p>
+                      </div>
+                      
+                      {assessmentResult.aquifer_analysis.aquifers.map((aquifer, index) => (
+                        <div key={index} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border dark:border-gray-600">
+                          <h5 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                            {aquifer.aquifer || 'Unknown Aquifer Type'}
+                          </h5>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div className="space-y-2">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Type:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.aquifer || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">System:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.system || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Configuration:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.aquifers || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Depth Zone:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.zone_m || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">State:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.state || 'N/A'}</span>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Avg. Depth (mbgl):</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.avg_mbgl || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Transmissivity:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.m2_perday || 'N/A'} m²/day</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Yield:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.m3_per_day || 'N/A'} m³/day</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Storage Coefficient:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.yeild__ || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-400">Permeability:</span>
+                                <span className="font-medium dark:text-gray-200">{aquifer.per_cm || 'N/A'} cm/s</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {aquifer.newcode43 && (
+                            <div className="mt-3 pt-3 border-t dark:border-gray-600">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                Reference: {aquifer.newcode43} | ID: {aquifer.objectid}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      
+                      <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border dark:border-green-800/30">
+                        <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">Groundwater Recharge Potential</h4>
+                        <p className="text-sm text-green-800 dark:text-green-200">
+                          The presence of {assessmentResult.aquifer_analysis.count} aquifer(s) indicates good potential for groundwater recharge through rainwater harvesting. 
+                          Consider implementing recharge wells or recharge pits to supplement the natural groundwater system.
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border dark:border-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        No aquifers identified at this location. Consider surface water storage solutions for rainwater harvesting.
+                      </p>
+                    </div>
                   )}
                 </CardContent>
               </Card>

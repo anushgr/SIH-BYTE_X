@@ -3,7 +3,9 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 import logging
 import httpx
-from ..soil_service import get_soil_data
+from ..soil_data.enhanced_soil_service import get_soil_data_from_raster
+from ..aquifer_service import get_aquifer_data
+from ..enhanced_aquifer_service import get_enhanced_aquifer_data
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/assessment", tags=["assessment"])
@@ -100,12 +102,18 @@ async def create_assessment(assessment_data: AssessmentData):
         rainfall_data = None
         rainfall_error = None
         
+        aquifer_data = None
+        aquifer_error = None
+        rainfall_error = None
+        
         # Get environmental data if coordinates are provided
         if assessment_data.latitude and assessment_data.longitude:
             # Get soil data
             try:
                 logger.info(f"Fetching soil data for coordinates: {assessment_data.latitude}, {assessment_data.longitude}")
-                soil_data = get_soil_data(assessment_data.latitude, assessment_data.longitude)
+                soil_data = get_soil_data_from_raster(assessment_data.latitude, assessment_data.longitude)
+                logger.info(f"Soil data response: {soil_data}")
+                print(soil_data)
                 
                 # Check for successful soil data extraction
                 if soil_data and not soil_data.get("error"):
@@ -146,6 +154,21 @@ async def create_assessment(assessment_data: AssessmentData):
             except Exception as e:
                 rainfall_error = f"Rainfall data extraction error: {str(e)}"
                 logger.error(f"Error during rainfall data extraction: {str(e)}", exc_info=True)
+                
+            # Get aquifer data
+            try:
+                logger.info(f"Fetching enhanced aquifer data for coordinates: {assessment_data.latitude}, {assessment_data.longitude}")
+                aquifer_data = get_enhanced_aquifer_data(assessment_data.latitude, assessment_data.longitude)
+                
+                if aquifer_data and aquifer_data.get("success"):
+                    logger.info(f"Successfully extracted enhanced aquifer data: {aquifer_data['count']} aquifer(s) found")
+                else:
+                    aquifer_error = aquifer_data.get("error", "No aquifers found at this location") if aquifer_data else "No aquifer data returned"
+                    logger.warning(f"Failed to extract aquifer data: {aquifer_error}")
+                    
+            except Exception as e:
+                aquifer_error = f"Aquifer data extraction error: {str(e)}"
+                logger.error(f"Error during aquifer data extraction: {str(e)}", exc_info=True)
         
         # Calculate preliminary assessment metrics
         estimated_annual_collection = 0
@@ -192,7 +215,7 @@ async def create_assessment(assessment_data: AssessmentData):
         
         # Prepare soil information for response
         soil_info = None
-        if soil_type and soil_type != "Unknown":
+        if soil_data and soil_data.get("success") and not soil_data.get("error"):
             soil_info = {
                 "soil_type": soil_type,
                 "soil_class": soil_class,
@@ -226,6 +249,25 @@ async def create_assessment(assessment_data: AssessmentData):
                 "message": "Rainfall data not available for this location"
             }
         
+        # Prepare aquifer information for response
+        aquifer_info = None
+        if aquifer_data and aquifer_data.get("success"):
+            aquifer_info = {
+                "aquifers": aquifer_data["aquifers"],
+                "count": aquifer_data["count"],
+                "location": aquifer_data["location"],
+                "summary": aquifer_data.get("summary", {}),
+                "user_friendly": True  # Flag to indicate enhanced formatting
+            }
+        elif aquifer_error:
+            aquifer_info = {
+                "error": aquifer_error,
+                "message": "Aquifer data not available for this location",
+                "aquifers": [],
+                "count": 0,
+                "recommendation": aquifer_data.get("recommendation", {}) if aquifer_data else {}
+            }
+        
         return {
             "message": "Assessment completed successfully",
             "assessment_data": {
@@ -251,6 +293,7 @@ async def create_assessment(assessment_data: AssessmentData):
             },
             "soil_analysis": soil_info,
             "rainfall_analysis": rainfall_info,
+            "aquifer_analysis": aquifer_info,
             "location": {
                 "latitude": assessment_data.latitude,
                 "longitude": assessment_data.longitude,
@@ -269,7 +312,7 @@ async def get_soil_data_for_location(latitude: float, longitude: float):
     Get soil data for specific coordinates
     """
     try:
-        soil_data = get_soil_data(latitude, longitude)
+        soil_data = get_soil_data_from_raster(latitude, longitude)
         return {
             "location": {
                 "latitude": latitude,
@@ -283,4 +326,49 @@ async def get_soil_data_for_location(latitude: float, longitude: float):
         raise HTTPException(
             status_code=500, 
             detail=f"Failed to retrieve soil data: {str(e)}"
+        )
+
+@router.get("/aquifer-data/{latitude}/{longitude}")
+async def get_aquifer_data_for_location(
+    latitude: float, 
+    longitude: float,
+    enhanced: bool = True  # Default to enhanced view
+):
+    """
+    Get aquifer data for specific coordinates
+    
+    Args:
+        latitude: Latitude coordinate
+        longitude: Longitude coordinate  
+        enhanced: If True, returns user-friendly enhanced data. If False, returns raw technical data.
+    """
+    try:
+        if enhanced:
+            aquifer_data = get_enhanced_aquifer_data(latitude, longitude)
+            return {
+                "location": {
+                    "latitude": latitude,
+                    "longitude": longitude
+                },
+                "aquifer_analysis": aquifer_data,
+                "view_type": "enhanced",
+                "status": "success"
+            }
+        else:
+            # Fallback to original technical data
+            aquifer_data = get_aquifer_data(latitude, longitude)
+            return {
+                "location": {
+                    "latitude": latitude,
+                    "longitude": longitude
+                },
+                "aquifer_analysis": aquifer_data,
+                "view_type": "technical",
+                "status": "success"
+            }
+    except Exception as e:
+        logger.error(f"Error getting aquifer data for {latitude}, {longitude}: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to retrieve aquifer data: {str(e)}"
         )
