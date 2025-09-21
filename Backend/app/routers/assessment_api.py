@@ -7,6 +7,7 @@ from ..soil_data.enhanced_soil_service import get_soil_data_from_raster
 from ..aquifer_service import get_aquifer_data
 from ..enhanced_aquifer_service import get_enhanced_aquifer_data
 from ..ground_water_level import groundwater_service
+from ..anthropic_service import anthropic_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/assessment", tags=["assessment"])
@@ -1588,17 +1589,81 @@ async def create_assessment(assessment_data: AssessmentData):
                     "message": "Structure recommendations not available"
                 }
 
+        # Generate AI-powered comprehensive recommendations using all collected data
+        ai_recommendations = None
+        try:
+            logger.info("Generating AI-powered comprehensive recommendations")
+            
+            # Prepare assessment data for AI
+            assessment_data_for_ai = {
+                "name": assessment_data.name,
+                "email": assessment_data.email,
+                "phone": assessment_data.phone,
+                "address": assessment_data.address,
+                "city": assessment_data.city,
+                "state": assessment_data.state,
+                "pincode": assessment_data.pincode,
+                "roof_area": roof_area,
+                "roof_type": assessment_data.roofType,
+                "dwellers": dwellers,
+                "open_space": float(assessment_data.openSpace) if assessment_data.openSpace and assessment_data.openSpace.replace('.', '').isdigit() else None,
+                "current_water_source": assessment_data.currentWaterSource,
+                "monthly_water_bill": float(assessment_data.monthlyWaterBill) if assessment_data.monthlyWaterBill and assessment_data.monthlyWaterBill.replace('.', '').isdigit() else None
+            }
+            
+            # Debug logging for all parameters
+            logger.info(f"Assessment data for AI: {type(assessment_data_for_ai)} - {assessment_data_for_ai}")
+            logger.info(f"Soil info type: {type(soil_info)} - Content: {soil_info}")
+            logger.info(f"Rainfall info type: {type(rainfall_info)} - Content: {rainfall_info}")
+            logger.info(f"Groundwater info type: {type(groundwater_info)} - Content: {groundwater_info}")
+            logger.info(f"Feasibility analysis type: {type(feasibility_analysis)} - Content preview: {str(feasibility_analysis)[:200] if feasibility_analysis else None}")
+            logger.info(f"Structure recommendations type: {type(structure_recommendations)} - Content preview: {str(structure_recommendations)[:200] if structure_recommendations else None}")
+            logger.info(f"Runoff analysis type: {type(runoff_analysis)} - Content preview: {str(runoff_analysis)[:200] if runoff_analysis else None}")
+            
+            # Call Anthropic API to generate comprehensive recommendations
+            ai_response = anthropic_service.generate_comprehensive_recommendation(
+                assessment_data=assessment_data_for_ai,
+                soil_analysis=soil_info,
+                rainfall_analysis=rainfall_info,
+                groundwater_analysis=groundwater_info,
+                feasibility_assessment=feasibility_analysis,
+                structure_recommendations=structure_recommendations,
+                runoff_analysis=runoff_analysis
+            )
+            
+            if ai_response.get("success"):
+                ai_recommendations = ai_response
+                logger.info("AI recommendations generated successfully")
+            else:
+                logger.warning(f"AI recommendation generation failed: {ai_response.get('error')}")
+                ai_recommendations = {
+                    "error": ai_response.get("error"),
+                    "message": "AI recommendations not available at this time"
+                }
+                
+        except Exception as e:
+            logger.error(f"Error generating AI recommendations: {str(e)}", exc_info=True)
+            ai_recommendations = {
+                "error": f"AI recommendation error: {str(e)}",
+                "message": "AI recommendations not available at this time"
+            }
+
         return {
             "message": "Assessment completed successfully",
             "assessment_data": {
                 "name": assessment_data.name,
                 "email": assessment_data.email,
+                "phone": assessment_data.phone,
                 "address": assessment_data.address,
                 "city": assessment_data.city,
                 "state": assessment_data.state,
+                "pincode": assessment_data.pincode,
                 "roof_area": roof_area,
                 "roof_type": assessment_data.roofType,
-                "dwellers": int(assessment_data.dwellers) if assessment_data.dwellers.isdigit() else 0
+                "open_space": float(assessment_data.openSpace) if assessment_data.openSpace and assessment_data.openSpace.replace('.', '').isdigit() else None,
+                "dwellers": int(assessment_data.dwellers) if assessment_data.dwellers.isdigit() else 0,
+                "current_water_source": assessment_data.currentWaterSource,
+                "monthly_water_bill": int(assessment_data.monthlyWaterBill) if assessment_data.monthlyWaterBill and assessment_data.monthlyWaterBill.isdigit() else None
             },
             "preliminary_results": {
                 "estimated_annual_collection_liters": round(estimated_annual_collection, 2),
@@ -1619,6 +1684,7 @@ async def create_assessment(assessment_data: AssessmentData):
             "rainfall_analysis": rainfall_info,
             "aquifer_analysis": aquifer_info,
             "groundwater_analysis": groundwater_info,
+            "ai_recommendations": ai_recommendations,
             "location": {
                 "latitude": assessment_data.latitude,
                 "longitude": assessment_data.longitude,

@@ -12,3 +12,5 @@ passlib[bcrypt]
 rasterio
 geopandas
 pyproj
+python-dotenv
+anthropic
