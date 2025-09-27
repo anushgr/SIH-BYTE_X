@@ -1,48 +1,15 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import SpotlightCard from "@/components/SpotlightCard"
 import AnimatedBenefits from "@/components/AnimatedBenefits"
+import { STATE_URLS, STATE_NAMES } from "@/lib/state-data"
 
 export default function InfoPage() {
-  const stateToUrl: Record<string, string> = useMemo(() => ({
-    "Andhra Pradesh": "https://irrigation.ap.gov.in/",
-    "Arunachal Pradesh": "https://wrdarunachal.nic.in/",
-    "Assam": "https://waterresources.assam.gov.in/",
-    "Bihar": "https://wrd.bihar.gov.in/",
-    "Chhattisgarh": "https://wrid.cg.gov.in/",
-    "Delhi": "https://djb.gov.in/",
-    "Goa": "https://goawrd.gov.in/schemes-policies/rain-water-harvesting",
-    "Gujarat": "https://guj-nwrws.gujarat.gov.in/",
-    "Haryana": "https://www.harrws.nic.in/",
-    "Himachal Pradesh": "https://hpiph.org/",
-    "Jammu & Kashmir": "https://jalshakti.jk.gov.in/",
-    "Jharkhand": "https://wrdjharkhand.nic.in/",
-    "Karnataka": "https://waterresources.karnataka.gov.in/",
-    "Kerala": "https://waterresources.kerala.gov.in/",
-    "Madhya Pradesh": "https://www.mpwrd.gov.in/",
-    "Maharashtra": "https://wrd.maharashtra.gov.in/",
-    "Manipur": "https://manipur.gov.in/",
-    "Meghalaya": "https://megdams.gov.in/",
-    "Mizoram": "https://irrigation.mizoram.gov.in/",
-    "Nagaland": "https://nagaland.gov.in/",
-    "Odisha": "https://www.dowrodisha.gov.in/",
-    "Punjab": "https://irrigation.punjab.gov.in/",
-    "Rajasthan": "https://waterresources.rajasthan.gov.in/",
-    "Sikkim": "https://sikkim.gov.in/",
-    "Tamil Nadu": "https://www.tn.gov.in/department/22",
-    "Telangana": "https://irrigation.telangana.gov.in/",
-    "Tripura": "https://wrtripura.nic.in/",
-    "Uttar Pradesh": "https://irrigation.up.nic.in/",
-    "Uttarakhand": "https://www.uk.gov.in/",
-    "West Bengal": "https://wbiwd.gov.in/",
-    "Andaman & Nicobar Islands": "https://andaman.gov.in/",
-    "Chandigarh": "https://chandigarh.gov.in/",
-    "Puducherry": "https://pwd.py.gov.in/",
-  }), [])
 
   const [selectedState, setSelectedState] = useState<string>("")
-  const selectedUrl = selectedState ? stateToUrl[selectedState] : ""
+  const selectedUrl = selectedState ? STATE_URLS[selectedState] : ""
   const selectedHost = useMemo(() => {
     if (!selectedUrl) return ""
     try { return new URL(selectedUrl).hostname } catch { return selectedUrl }
@@ -393,7 +360,7 @@ export default function InfoPage() {
                   onChange={(e) => setSelectedState(e.target.value)}
                 >
                   <option value="">Select a state</option>
-                  {Object.keys(stateToUrl).sort().map((st) => (
+                  {STATE_NAMES.map((st) => (
                     <option key={st} value={st}>{st}</option>
                   ))}
                 </select>
@@ -574,6 +541,36 @@ export default function InfoPage() {
                   <p className="text-gray-600 dark:text-gray-300 text-sm">Rainwater Harvesting FAQs and case studies</p>
                 </div>
               </div>
+            </div>
+          </SpotlightCard>
+        </div>
+      </section>
+
+      {/* Start Assessment Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <SpotlightCard className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/50 dark:to-blue-900/50 backdrop-blur-sm">
+            <div className="p-8 text-center">
+              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-3xl">🚀</span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                Ready to Get Started?
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+                Now that you understand the benefits and methods of rainwater harvesting, take our comprehensive assessment to get personalized recommendations for your specific location and requirements.
+              </p>
+              <Link
+                href="/assessment"
+                className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-8 py-4 text-white font-semibold text-lg shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105"
+              >
+                <span className="text-xl">📊</span>
+                <span data-translate="Start Your Assessment">Start Your Assessment</span>
+                <span className="text-xl">→</span>
+              </Link>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                Get personalized recommendations based on your location, roof area, and water needs
+              </p>
             </div>
           </SpotlightCard>
         </div>
