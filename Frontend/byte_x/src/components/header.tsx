@@ -98,6 +98,19 @@ export function Header() {
               <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
             )}
           </Link>
+          <Link
+            href="/government-schemes"
+            className={`relative px-4 py-2 rounded-full transition-all duration-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
+              isActive('/government-schemes') 
+                ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-900/30' 
+                : 'text-foreground/70 hover:text-blue-600 dark:hover:text-blue-400'
+            }`}
+          >
+            <span data-translate="Government Schemes">Government Schemes</span>
+            {isActive('/government-schemes') && (
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
+            )}
+          </Link>
         </nav>
 
         {/* Right side items */}
