@@ -4,6 +4,7 @@ from .routers.rainfall_api import router as rainfall_router
 from .routers.auth_api import router as auth_router
 from .routers.assessment_api import router as assessment_router
 from .routers.groundwater_api import router as groundwater_router
+from .routers.chatbot_api import router as chatbot_router
 from .database import engine
 from .models import Base
 
@@ -26,6 +27,7 @@ app.include_router(rainfall_router)
 app.include_router(auth_router)
 app.include_router(assessment_router)
 app.include_router(groundwater_router)
+app.include_router(chatbot_router)
 
 @app.get("/")
 async def root():

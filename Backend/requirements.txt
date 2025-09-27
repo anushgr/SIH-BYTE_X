@@ -14,3 +14,10 @@ geopandas
 pyproj
 python-dotenv
 anthropic
+langchain
+langchain-anthropic
+langchain-community
+sentence-transformers
+faiss-cpu
+beautifulsoup4
+requests

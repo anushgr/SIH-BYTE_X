@@ -12,20 +12,28 @@ interface Message {
   timestamp: Date
 }
 
+interface ChatResponse {
+  success: boolean
+  message: string
+  response: string
+  query: string
+}
+
 export const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "Hello! Welcome to Jalsanchay - Rainwater Harvesting Platform. I'm here to help you with any questions about rainwater harvesting.",
+      text: "Hello! Welcome to Jalsanchay - Rainwater Harvesting Platform. I'm here to help you with any questions about rainwater harvesting, groundwater management, and water conservation based on official Indian government resources.",
       isUser: false,
       timestamp: new Date()
     }
   ])
   const [inputMessage, setInputMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSendMessage = () => {
-    if (inputMessage.trim() === '') return
+  const handleSendMessage = async () => {
+    if (inputMessage.trim() === '' || isLoading) return
 
     // Add user message
     const userMessage: Message = {
@@ -37,9 +45,11 @@ export const Chatbot: React.FC = () => {
 
     // Add user message immediately
     setMessages(prev => [...prev, userMessage])
+    const currentQuery = inputMessage
     setInputMessage('')
+    setIsLoading(true)
 
-    // Add typing indicator or loading state
+    // Add typing indicator
     const typingMessage: Message = {
       id: messages.length + 2,
       text: "finding result...",
@@ -47,30 +57,30 @@ export const Chatbot: React.FC = () => {
       timestamp: new Date()
     }
 
-    // Show typing indicator
     setMessages(prev => [...prev, typingMessage])
 
-    // Delayed bot response (5 seconds)
-    setTimeout(() => {
+    try {
+      // Call backend API
+      const response = await fetch('http://localhost:8000/api/chatbot/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentQuery,
+          session_id: null // You can implement session management later
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data: ChatResponse = await response.json()
+      
       const botResponse: Message = {
         id: messages.length + 3,
-        text: `Here are the main groundwater recharge structures:
-
-🔸 Percolation tank - Stores runoff to slowly seep into aquifers.
-🔸 Check dam / Nala bund - Small barriers across streams to enhance infiltration.
-🔸 Contour bund / trench - Slows down slope runoff, promotes percolation.
-🔸 Sub-surface dyke - Underground wall to stop groundwater from draining away.
-🔸 Recharge well - Directs surface water into deeper aquifers.
-🔸 Injection well - Pumps treated water into confined aquifers.
-🔸 Recharge shaft - Vertical shaft bypassing impermeable layers for recharge.
-🔸 Recharge pit - Small pit with filter media for rooftop rainwater.
-🔸 Recharge trench - Shallow linear trench to absorb runoff.
-🔸 Soak pit - Small circular pit for household rooftop recharge.
-🔸 Gabion structure - Boulder-filled wire mesh slowing channel flow.
-🔸 Sand dam - Stores water within accumulated sand for gradual recharge.
-🔸 Anicut / weir - Low barrier in rivers to hold and infiltrate water.
-
-These structures help capture and infiltrate rainwater to replenish groundwater aquifers naturally.`,
+        text: data.success ? data.response : data.message || 'Sorry, I encountered an error while processing your question.',
         isUser: false,
         timestamp: new Date()
       }
@@ -80,11 +90,29 @@ These structures help capture and infiltrate rainwater to replenish groundwater 
         const withoutTyping = prev.filter(msg => msg.text !== "finding result...")
         return [...withoutTyping, botResponse]
       })
-    }, 5000) // 5-second delay
+
+    } catch (error) {
+      console.error('Error calling chatbot API:', error)
+      
+      const errorResponse: Message = {
+        id: messages.length + 3,
+        text: 'Sorry, I\'m having trouble connecting to the server right now. Please try again later.',
+        isUser: false,
+        timestamp: new Date()
+      }
+
+      // Replace typing indicator with error response
+      setMessages(prev => {
+        const withoutTyping = prev.filter(msg => msg.text !== "finding result...")
+        return [...withoutTyping, errorResponse]
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !isLoading) {
       handleSendMessage()
     }
   }
@@ -158,13 +186,15 @@ These structures help capture and infiltrate rainwater to replenish groundwater 
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message..."
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                  placeholder={isLoading ? "Processing..." : "Type your message..."}
+                  disabled={isLoading}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                 />
                 <Button
                   onClick={handleSendMessage}
                   size="icon"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={isLoading || inputMessage.trim() === ''}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
