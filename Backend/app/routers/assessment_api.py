@@ -467,7 +467,7 @@ def calculate_tank_cost(capacity_liters: float, material: str, quality: str) -> 
     
     # Base rates per liter in INR (Indian market 2024)
     base_rates = {
-        "plastic": {"basic": 12, "standard": 18, "premium": 25},
+        "plastic": {"basic": 10, "standard": 14, "premium": 20},
         "concrete": {"basic": 45, "standard": 65, "premium": 85},
         "fiberglass": {"basic": 35, "standard": 50, "premium": 75}
     }
@@ -484,7 +484,7 @@ def calculate_tank_cost(capacity_liters: float, material: str, quality: str) -> 
     
     # Add installation and accessories (20-40% of base cost)
     installation_multiplier = {
-        "plastic": 1.25,
+        "plastic": 1.2,
         "concrete": 1.4,
         "fiberglass": 1.3
     }

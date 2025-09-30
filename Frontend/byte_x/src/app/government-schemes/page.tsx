@@ -1269,28 +1269,28 @@ export default function GovernmentSchemesPage() {
       </section>
 
       {/* Start Assessment Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <SpotlightCard className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/50 dark:to-blue-900/50 backdrop-blur-sm">
-            <div className="p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl">🚀</span>
+            <div className="p-6 sm:p-8 text-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                <span className="text-2xl sm:text-3xl">🚀</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
                 Ready to Get Started?
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto px-2">
                 Now that you've explored government schemes and incentives, take our comprehensive assessment to get personalized recommendations for your specific location and requirements.
               </p>
               <Link
                 href="/assessment"
-                className="inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-8 py-4 text-white font-semibold text-lg shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 sm:gap-3 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold text-base sm:text-lg shadow-lg hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-105 w-full sm:w-auto max-w-xs sm:max-w-none mx-auto"
               >
-                <span className="text-xl">📊</span>
-                <span data-translate="Start Your Assessment">Start Your Assessment</span>
-                <span className="text-xl">→</span>
+                <span className="text-lg sm:text-xl">📊</span>
+                <span data-translate="Start Your Assessment" className="flex-shrink-0">Start Your Assessment</span>
+                <span className="text-lg sm:text-xl">→</span>
               </Link>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-3 sm:mt-4 px-2">
                 Get personalized recommendations based on your location, roof area, and water needs
               </p>
             </div>

@@ -289,19 +289,19 @@ export default function Assessment() {
       />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 dark:from-gray-900 dark:via-blue-900 dark:to-green-900">
       {/* Header */}
-      <section className="pt-8 pb-4 px-4 sm:px-6 lg:px-8">
+      <section className="pt-6 sm:pt-8 pb-3 sm:pb-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 leading-tight">
             Rainwater Harvesting Assessment
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2">
             Provide your property details to get a personalized assessment of your rainwater harvesting potential
           </p>
         </div>
       </section>
 
       {/* Form Section */}
-      <section className="py-8 px-4 sm:px-6 lg:px-8">
+      <section className="py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Personal Information */}
@@ -322,10 +322,10 @@ export default function Assessment() {
                   }
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContent className="space-y-4 p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm font-medium">Full Name *</Label>
                     <Input
                       id="name"
                       name="name"
@@ -334,10 +334,11 @@ export default function Assessment() {
                       placeholder={authLoading ? "Loading..." : "Enter your full name"}
                       required
                       disabled={authLoading}
+                      className="h-10 text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email" className="text-sm font-medium">Email Address *</Label>
                     <Input
                       id="email"
                       name="email"
@@ -347,10 +348,11 @@ export default function Assessment() {
                       placeholder={authLoading ? "Loading..." : "Enter your email"}
                       required
                       disabled={authLoading}
+                      className="h-10 text-base"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
                     <Input
                       id="phone"
                       name="phone"
@@ -359,6 +361,7 @@ export default function Assessment() {
                       onChange={handleInputChange}
                       placeholder={authLoading ? "Loading..." : "Enter your phone number"}
                       disabled={authLoading}
+                      className="h-10 text-base"
                     />
                   </div>
                 </div>
@@ -367,10 +370,13 @@ export default function Assessment() {
 
             {/* Location Information */}
             <Card className="dark:bg-gray-800 dark:border-gray-700">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <CardTitle className="dark:text-white">Location Details</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <CardTitle className="dark:text-white text-lg">Location Details</CardTitle>
+                    <CardDescription className="dark:text-gray-300 text-sm mt-1">
+                      Your property location for local climate and groundwater analysis
+                    </CardDescription>
                   </div>
                   <Button
                     type="button"
@@ -378,27 +384,24 @@ export default function Assessment() {
                     disabled={isLoading}
                     variant="default"
                     size="sm"
-                    className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+                    className="rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300 whitespace-nowrap self-start sm:self-auto"
                   >
                     {isLoading ? "Getting Location..." : "Get Location automatically"}
                   </Button>
                 </div>
-                <CardDescription className="dark:text-gray-300">
-                  Your property location for local climate and groundwater analysis
-                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 sm:p-6">
                 <div className="space-y-2">
-                  <Label htmlFor="address">Property Address *</Label>
-                  <div className="flex gap-2">
+                  <Label htmlFor="address" className="text-sm font-medium">Property Address *</Label>
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       id="address"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
+                      className="h-10 text-base flex-1"
                       placeholder="Enter your complete address"
                       required
-                      className="flex-1"
                     />
                     <Button
                       type="button"
@@ -423,55 +426,58 @@ export default function Assessment() {
                     </Button>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="city">City *</Label>
+                    <Label htmlFor="city" className="text-sm font-medium">City *</Label>
                     <Input
                       id="city"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
                       placeholder="Will be auto-filled with GPS"
+                      className="h-10 text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="state">State *</Label>
+                    <Label htmlFor="state" className="text-sm font-medium">State *</Label>
                     <Input
                       id="state"
                       name="state"
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="Will be auto-filled with GPS"
+                      className="h-10 text-base"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="pincode">PIN Code</Label>
+                    <Label htmlFor="pincode" className="text-sm font-medium">PIN Code</Label>
                     <Input
                       id="pincode"
                       name="pincode"
                       value={formData.pincode}
                       onChange={handleInputChange}
                       placeholder="Enter PIN code"
+                      className="h-10 text-base"
                     />
                   </div>
                 </div>
                 
                 {/* GPS Location */}
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <div className="mb-3">
-                    <h3 className="font-semibold text-blue-900">GPS Coordinates & Address</h3>
-                    <p className="text-xs text-blue-600 mt-1">
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-sm sm:text-base">GPS Coordinates & Address</h3>
+                    <p className="text-xs sm:text-sm text-blue-600 dark:text-blue-300 mt-1">
                       Two ways to get coordinates: Use "Get Location automatically" for GPS, or enter address manually and click "Get Coordinates"
                     </p>
                   </div>
                   
                   {location && (
-                    <div className="bg-green-50 p-3 rounded border border-green-200 mb-3">
+                    <div className="bg-green-50 dark:bg-green-900/20 p-2 sm:p-3 rounded border border-green-200 dark:border-green-800 mb-3">
                       <div className="flex items-center space-x-2 mb-2">
-                        <span className="text-green-600">✓</span>
-                        <span className="text-green-800 font-medium">Location Detected</span>
+                        <span className="text-green-600 dark:text-green-400">✓</span>
+                        <span className="text-green-800 dark:text-green-200 font-medium text-sm">Location Detected</span>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-sm text-green-700">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm text-green-700 dark:text-green-300">
                         <div>Lat: {location.latitude.toFixed(6)}</div>
                         <div>Lng: {location.longitude.toFixed(6)}</div>
                         <div>Accuracy: {location.accuracy.toFixed(0)}m</div>

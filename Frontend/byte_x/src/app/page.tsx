@@ -11,53 +11,53 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-green-50 dark:from-gray-900 dark:via-blue-900 dark:to-green-900">
       {/* Hero Section */}
-      <section className="pt-16 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="pt-8 sm:pt-16 pb-12 sm:pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-tight">
               Discover Your{" "}
               <span className="gradient-text-animated">
                 Rainwater Harvesting
               </span>{" "}
               Potential
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8 px-2">
               Assess the feasibility of rooftop rainwater harvesting at your location. 
               Get personalized recommendations for sustainable water management and groundwater conservation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="text-lg px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center max-w-md sm:max-w-none mx-auto">
+              <Button size="lg" asChild className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
                 <Link href="/assessment">Check Your Potential</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="text-lg px-8 py-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 transition-all duration-300">
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-3 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 border-blue-200 dark:border-blue-700 transition-all duration-300">
                 <Link href="/info">Learn More</Link>
               </Button>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+            <div className="text-center p-4 sm:p-0">
               <CountUp 
                 end={68} 
                 suffix="%" 
-                className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2"
+                className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1 sm:mb-2"
                 duration={2500}
               />
-              <div className="text-gray-600 dark:text-gray-300">Water Stress Reduction Potential</div>
+              <div className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Water Stress Reduction Potential</div>
             </div>
-            <div className="text-center">
+            <div className="text-center p-4 sm:p-0">
               <CountUp 
                 end={15} 
                 prefix="₹" 
                 suffix="K" 
-                className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2"
+                className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2"
                 duration={2500}
               />
-              <div className="text-gray-600 dark:text-gray-300">Average Annual Savings</div>
+              <div className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Average Annual Savings</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+            <div className="text-center p-4 sm:p-0">
+              <div className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">
                 <CountUp 
                   end={3} 
                   className="inline"
@@ -71,25 +71,25 @@ export default function Home() {
                   duration={2000}
                 />
               </div>
-              <div className="text-gray-600 dark:text-gray-300">Typical ROI Period</div>
+              <div className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Typical ROI Period</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
               Comprehensive Assessment Features
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-2">
               Our platform provides detailed analysis and actionable insights for your rainwater harvesting project
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <SpotlightCard className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <Card className="border-0 shadow-none bg-transparent">
                 <CardHeader>
@@ -178,12 +178,12 @@ export default function Home() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 sm:mb-12 text-center">
             Why Rainwater Harvesting Matters
           </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div>
               <AnimatedBenefits>
                 <div className="space-y-6">
@@ -243,39 +243,39 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-green-600">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-green-600">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 sm:mb-6">
             Ready to Make a Difference?
           </h2>
-          <p className="text-xl text-blue-100 dark:text-blue-200 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-blue-100 dark:text-blue-200 mb-6 sm:mb-8 max-w-2xl mx-auto px-2">
             Take the first step towards sustainable water management. 
             Get your personalized rainwater harvesting assessment in just a few minutes.
           </p>
-          <Button size="lg" variant="secondary" asChild className="text-lg px-8 py-3">
+          <Button size="lg" variant="secondary" asChild className="text-base sm:text-lg px-6 sm:px-8 py-3 w-full sm:w-auto max-w-xs mx-auto">
             <Link href="/assessment">Get Your Assessment</Link>
           </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-gray-950 text-white py-12 px-4 sm:px-6 lg:px-8">
+      <footer className="bg-gray-900 dark:bg-gray-950 text-white py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">JS</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="sm:col-span-2 md:col-span-1">
+              <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xs sm:text-sm">JS</span>
                 </div>
-                <span className="text-xl font-bold">Jalsanchay</span>
+                <span className="text-lg sm:text-xl font-bold">Jalsanchay</span>
               </div>
-              <p className="text-gray-400 dark:text-gray-300">
+              <p className="text-gray-400 dark:text-gray-300 text-sm sm:text-base">
                 Empowering communities through sustainable water management and groundwater conservation.
               </p>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">About</h3>
-              <ul className="space-y-2 text-gray-400 dark:text-gray-300">
+              <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">About</h3>
+              <ul className="space-y-1.5 sm:space-y-2 text-gray-400 dark:text-gray-300 text-sm">
                 <li>CGWB Initiative</li>
                 <li>Scientific Approach</li>
                 <li>GIS-based Analysis</li>
@@ -283,8 +283,8 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-400 dark:text-gray-300">
+              <h3 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Support</h3>
+              <ul className="space-y-1.5 sm:space-y-2 text-gray-400 dark:text-gray-300 text-sm">
                 <li>Help Center</li>
                 <li>Documentation</li>
                 <li>Regional Languages</li>
@@ -292,8 +292,8 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-8 text-center text-gray-400 dark:text-gray-300">
-            <p>&copy; 2025 Jalsanchay . A Central Ground Water Board Initiative.</p>
+          <div className="border-t border-gray-800 dark:border-gray-700 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center text-gray-400 dark:text-gray-300">
+            <p className="text-xs sm:text-sm">&copy; 2025 Jalsanchay . A Central Ground Water Board Initiative.</p>
           </div>
         </div>
       </footer>

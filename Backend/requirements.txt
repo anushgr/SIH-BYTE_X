@@ -21,3 +21,5 @@ sentence-transformers
 faiss-cpu
 beautifulsoup4
 requests
+vosk
+pyaudio

@@ -179,7 +179,7 @@ export default function IndiaMap({ userLocation, stations, onLocationChange }: P
         map.off('click', clickHandler)
       }
     }
-  }, [userLocation, allStations, nearest])
+  }, [userLocation, allStations, nearest, onLocationChange])
 
   return (
     <div className="w-full rounded-lg overflow-hidden border border-blue-200 relative z-0" style={{ height: 320 }}>
